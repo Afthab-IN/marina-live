@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Marina, Live: the Marina Beach corridor of Chennai in 3D</title>
+<meta name="description" content="A living 3D model of Chennai's Marina corridor: Chepauk, the lighthouse, Anna Salai, Chennai Central and Fort St George, with the sun, the sea and the city at night. Orbit it in your browser.">
+<meta name="theme-color" content="#101a22">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23101a22'/%3E%3Cpath d='M5 22c4-2 7 2 11 0s7-2 11 0v5H5z' fill='%233d8fa6'/%3E%3Cpath d='M14 6h4l1 14h-6z' fill='%23f0c27b'/%3E%3Cpath d='M13.6 10h4.8M13.3 14h5.4' stroke='%23c4523f' stroke-width='1.6'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+<main id="stage" aria-label="Interactive model of the Marina corridor, Chennai"></main>
+<div class="labels" id="labels" aria-hidden="true"></div>
+
+<div id="loading" aria-live="polite">
+  <div>
+    <div class="eyebrow">Namma Chennai · Marina corridor</div>
+    <h2>Marina, Live</h2>
+    <p id="loading-text">Raising the Marina corridor…</p>
+    <div class="bar"><i id="loading-bar"></i></div>
+  </div>
+</div>
+
+<div class="hud top">
+  <section class="panel title">
+    <div class="eyebrow">Namma Chennai · Marina corridor</div>
+    <h1>Marina, Live</h1>
+    <p>Kamarajar Salai · Anna Salai · Chepauk · Fort St George</p>
+    <p id="status" role="status">Building the corridor…</p>
+  </section>
+  <section class="panel views" id="views">
+    <nav aria-label="View">
+      <button data-mode="iso" aria-pressed="true">Isometric</button>
+      <button data-mode="orbit" aria-pressed="false" hidden>Orbit</button>
+    </nav>
+    <nav aria-label="Layers" id="layers" hidden>
+      <button data-toggle="labels" aria-pressed="true">Labels</button>
+      <button data-toggle="traffic" aria-pressed="true">Traffic</button>
+      <button data-toggle="lens" aria-pressed="false">Miniature lens</button>
+      <button data-toggle="sources" aria-pressed="false">Sources</button>
+    </nav>
+  </section>
+</div>
+
+<div class="hud bottom">
+  <section class="panel places">
+    <nav aria-label="Places" id="places"></nav>
+    <p id="hint">Drag to move · Right-drag to turn · Scroll to zoom</p>
+  </section>
+  <section class="panel light" id="light" aria-label="Light and season" hidden></section>
+  <section class="panel" id="credit">
+    <p><a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a> · Overture Maps (Google Open Buildings, Microsoft) · Google Open Buildings 2.5D heights · Mapzen terrain · three.js</p>
+  </section>
+</div>
+
+<script type="module" src="./src/main.ts"></script>
+</body>
+</html>

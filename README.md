@@ -2,12 +2,36 @@
 
 An interactive 3D model of the Marina Beach corridor in Chennai, covering Chepauk, the lighthouse, Anna Salai, Chennai Central, Periamet and Fort St George. It is a static Vite + three.js site with all data preprocessed offline.
 
-The site itself is added in the next phase. This README currently covers the data pipeline.
+The site is a Vite + TypeScript + three.js app in src/. The data pipeline in scripts/ writes everything it reads to public/data/.
 
 ## Area
 
 - Bounding box: south 13.034, west 80.262, north 13.090, east 80.296 (about 6.2 x 3.7 km).
 - Local coordinates are metres around the bbox centre: x east, z south, y up.
+
+## Running the site
+
+1. Install. This installs three, earcut, Vite and TypeScript (about 100 MB in node_modules).
+
+```bash
+npm install
+```
+
+2. Develop. Then open the local URL that is printed.
+
+```bash
+npm run dev
+```
+
+3. Build. This typechecks, then writes a static site to dist/, including dist/data/.
+
+```bash
+npm run build
+```
+
+The build uses relative paths, so dist/ works at the root of a domain or under a sub-path such as GitHub Pages.
+
+Add `?q=lite` to the URL to force the lighter phone settings, or `?q=high` to force full quality.
 
 ## Regenerating the data
 
