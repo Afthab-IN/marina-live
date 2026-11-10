@@ -1,0 +1,581 @@
+{
+  "bbox": {
+    "south": 13.034,
+    "west": 80.262,
+    "north": 13.09,
+    "east": 80.296
+  },
+  "counts": [
+    {
+      "layer": "buildings (ways)",
+      "selector": "way[\"building\"]",
+      "count": 10337
+    },
+    {
+      "layer": "buildings (relations)",
+      "selector": "relation[\"building\"]",
+      "count": 56
+    },
+    {
+      "layer": "buildings with building:levels",
+      "selector": "way[\"building\"][\"building:levels\"]",
+      "count": 947
+    },
+    {
+      "layer": "buildings with height",
+      "selector": "way[\"building\"][\"height\"]",
+      "count": 4
+    },
+    {
+      "layer": "building parts",
+      "selector": "way[\"building:part\"]",
+      "count": 27
+    },
+    {
+      "layer": "roads: trunk/primary/secondary",
+      "selector": "way[\"highway\"~\"^(trunk|primary|secondary)(_link)?$\"]",
+      "count": 421
+    },
+    {
+      "layer": "roads: tertiary/residential/other",
+      "selector": "way[\"highway\"~\"^(tertiary|tertiary_link|residential|unclassified|living_street|service)$\"]",
+      "count": 2346
+    },
+    {
+      "layer": "paths: footway/path/pedestrian/steps",
+      "selector": "way[\"highway\"~\"^(footway|path|pedestrian|steps|cycleway)$\"]",
+      "count": 408
+    },
+    {
+      "layer": "rail ways (rail/light_rail/subway)",
+      "selector": "way[\"railway\"~\"^(rail|light_rail|subway)$\"]",
+      "count": 161
+    },
+    {
+      "layer": "rail ways on bridges",
+      "selector": "way[\"railway\"~\"^(rail|light_rail)$\"][\"bridge\"]",
+      "count": 27
+    },
+    {
+      "layer": "platforms",
+      "selector": "way[\"railway\"=\"platform\"]",
+      "count": 32
+    },
+    {
+      "layer": "coastline ways",
+      "selector": "way[\"natural\"=\"coastline\"]",
+      "count": 5
+    },
+    {
+      "layer": "beach/sand areas",
+      "selector": "nwr[\"natural\"~\"^(beach|sand)$\"]",
+      "count": 4
+    },
+    {
+      "layer": "water areas",
+      "selector": "nwr[\"natural\"=\"water\"]",
+      "count": 39
+    },
+    {
+      "layer": "waterways",
+      "selector": "way[\"waterway\"]",
+      "count": 19
+    },
+    {
+      "layer": "parks/gardens",
+      "selector": "nwr[\"leisure\"~\"^(park|garden)$\"]",
+      "count": 67
+    },
+    {
+      "layer": "pitches/sports areas",
+      "selector": "nwr[\"leisure\"~\"^(pitch|sports_centre|track)$\"]",
+      "count": 38
+    },
+    {
+      "layer": "landuse areas",
+      "selector": "nwr[\"landuse\"]",
+      "count": 308
+    },
+    {
+      "layer": "trees (nodes)",
+      "selector": "node[\"natural\"=\"tree\"]",
+      "count": 334
+    },
+    {
+      "layer": "tree rows",
+      "selector": "way[\"natural\"=\"tree_row\"]",
+      "count": 0
+    },
+    {
+      "layer": "street lamps",
+      "selector": "node[\"highway\"=\"street_lamp\"]",
+      "count": 19
+    },
+    {
+      "layer": "traffic signals",
+      "selector": "node[\"highway\"=\"traffic_signals\"]",
+      "count": 72
+    },
+    {
+      "layer": "crossings",
+      "selector": "node[\"highway\"=\"crossing\"]",
+      "count": 35
+    },
+    {
+      "layer": "bus stops",
+      "selector": "node[\"highway\"=\"bus_stop\"]",
+      "count": 100
+    },
+    {
+      "layer": "place names",
+      "selector": "node[\"place\"]",
+      "count": 22
+    }
+  ],
+  "landmarks": [
+    {
+      "key": "chepauk_stadium",
+      "label": "MA Chidambaram Stadium (Chepauk)",
+      "required": true,
+      "candidates": 1,
+      "found": true,
+      "osm": "relation/60961",
+      "name": "MA Chidambaram Stadium",
+      "name_ta": "எம்.ஏ.சிதம்பரம் ஸ்டேடியம்",
+      "lat": 13.062866,
+      "lon": 80.279206,
+      "inside": true,
+      "edge_m": 1821.4,
+      "area_m2": 19464,
+      "length_m": 0,
+      "tags": {
+        "building": "yes",
+        "leisure": "stadium",
+        "type": "multipolygon",
+        "wikidata": "Q1188061",
+        "wikipedia": "en:M. A. Chidambaram Stadium"
+      }
+    },
+    {
+      "key": "lighthouse",
+      "label": "Chennai Lighthouse (Marina)",
+      "required": true,
+      "candidates": 1,
+      "found": true,
+      "osm": "way/211436935",
+      "name": "சென்னை மெரினா கலங்கரை விளக்கம்",
+      "name_ta": "",
+      "lat": 13.039741,
+      "lon": 80.279448,
+      "inside": true,
+      "edge_m": 635.2,
+      "area_m2": 78,
+      "length_m": 0,
+      "tags": {
+        "alt_name": "Chennai Marina Lighthouse",
+        "building:part": "yes",
+        "height": "45.72",
+        "man_made": "lighthouse",
+        "old_name": "Madras Lighthouse",
+        "wikidata": "Q6546309",
+        "wikimedia_commons": "Category:Chennai Lighthouse",
+        "wikipedia": "en:Chennai Lighthouse (1977)"
+      }
+    },
+    {
+      "key": "lic_building",
+      "label": "LIC Building, Anna Salai",
+      "required": true,
+      "candidates": 2,
+      "found": true,
+      "osm": "way/1110170916",
+      "name": "Life Insurance Corporation",
+      "name_ta": "",
+      "lat": 13.064196,
+      "lon": 80.266092,
+      "inside": true,
+      "edge_m": 443.8,
+      "area_m2": 970,
+      "length_m": 0,
+      "tags": {
+        "brand": "Life Insurance Corporation",
+        "brand:wikidata": "Q2767170",
+        "building": "yes",
+        "building:levels": "12",
+        "office": "insurance",
+        "short_name": "LIC"
+      }
+    },
+    {
+      "key": "chepauk_station",
+      "label": "Chepauk railway station",
+      "required": true,
+      "candidates": 1,
+      "found": true,
+      "osm": "node/2486239287",
+      "name": "Chepauk",
+      "name_ta": "சேப்பாக்கம்",
+      "lat": 13.061931,
+      "lon": 80.280596,
+      "inside": true,
+      "edge_m": 1670.7,
+      "area_m2": 0,
+      "length_m": 0,
+      "tags": {
+        "internet_access": "no",
+        "network": "IR",
+        "operator": "SR",
+        "public_transport": "station",
+        "railway": "station",
+        "ref": "MCPK",
+        "train": "yes",
+        "wikidata": "Q5091698",
+        "wikipedia": "en:Chepauk railway station"
+      }
+    },
+    {
+      "key": "chennai_central",
+      "label": "Chennai Central",
+      "required": true,
+      "candidates": 1,
+      "found": true,
+      "osm": "node/2481969291",
+      "name": "Puratchi Thalaivar Dr. M. G. Ramachandran Central",
+      "name_ta": "சென்னை - புரட்சி தலைவர் டா. எம். ஜி. ராமச்சந்திரன் சென்ட்ரல்",
+      "lat": 13.082423,
+      "lon": 80.275962,
+      "inside": true,
+      "edge_m": 838.2,
+      "area_m2": 0,
+      "length_m": 0,
+      "tags": {
+        "alt_name": "Chennai Central",
+        "int_name": "Chennai Central",
+        "internet_access": "wlan",
+        "network": "IR",
+        "old_name": "Madras Central",
+        "operator": "SR",
+        "public_transport": "station",
+        "railway": "station",
+        "ref": "MAS",
+        "wikidata": "Q257382",
+        "wikipedia": "en:Chennai Central railway station"
+      }
+    },
+    {
+      "key": "nehru_stadium",
+      "label": "Jawaharlal Nehru Stadium (Periamet)",
+      "required": true,
+      "candidates": 1,
+      "found": true,
+      "osm": "way/1241304916",
+      "name": "Jawaharlal Nehru Stadium",
+      "name_ta": "",
+      "lat": 13.08554,
+      "lon": 80.271665,
+      "inside": true,
+      "edge_m": 493.4,
+      "area_m2": 39698,
+      "length_m": 0,
+      "tags": {
+        "leisure": "stadium"
+      }
+    },
+    {
+      "key": "marina_beach",
+      "label": "Marina Beach",
+      "required": true,
+      "candidates": 2,
+      "found": true,
+      "osm": "way/22902280",
+      "name": "Marina Beach",
+      "name_ta": "மறீனா கடற்கரை",
+      "lat": 13.054221,
+      "lon": 80.283887,
+      "inside": true,
+      "edge_m": 1313.8,
+      "area_m2": 918061,
+      "length_m": 0,
+      "tags": {
+        "natural": "beach",
+        "wikidata": "Q673659",
+        "wikimedia_commons": "Category:Marina Beach",
+        "wikipedia": "en:Marina Beach"
+      }
+    },
+    {
+      "key": "fort_st_george",
+      "label": "Fort St George",
+      "required": false,
+      "candidates": 2,
+      "found": true,
+      "osm": "way/1178009706",
+      "name": "Fort St. George",
+      "name_ta": "புனித ஜார்ஜ் கோட்டை",
+      "lat": 13.08034,
+      "lon": 80.285251,
+      "inside": true,
+      "edge_m": 1068.7,
+      "area_m2": 601647,
+      "length_m": 0,
+      "tags": {
+        "addr:city": "Chennai",
+        "addr:postcode": "600009",
+        "addr:street": "Rajaji Salai",
+        "description": "The first British fortress built in India, established in 1644, with a museum & 17th-century church.",
+        "historic": "castle",
+        "landuse": "military",
+        "military": "base",
+        "old_name": "White Town",
+        "tourism": "attraction",
+        "wikidata": "Q1438739",
+        "wikipedia": "en:Fort St. George, India"
+      }
+    },
+    {
+      "key": "napier_bridge",
+      "label": "Napier Bridge",
+      "required": false,
+      "candidates": 3,
+      "found": true,
+      "osm": "way/28295242",
+      "name": "Napier Bridge",
+      "name_ta": "நேப்பியர் பாலம்",
+      "lat": 13.068784,
+      "lon": 80.284396,
+      "inside": true,
+      "edge_m": 1258.6,
+      "area_m2": 0,
+      "length_m": 155,
+      "tags": {
+        "bridge": "yes",
+        "highway": "primary",
+        "layer": "1",
+        "oneway": "yes"
+      },
+      "segments": 3,
+      "total_length_m": 309
+    },
+    {
+      "key": "high_court",
+      "label": "Madras High Court",
+      "required": false,
+      "candidates": 3,
+      "found": true,
+      "osm": "way/34326333",
+      "name": "Madras High Court",
+      "name_ta": "சென்னை உயர் நீதிமன்றம்",
+      "lat": 13.087014,
+      "lon": 80.287778,
+      "inside": true,
+      "edge_m": 330.3,
+      "area_m2": 125432,
+      "length_m": 0,
+      "tags": {
+        "amenity": "courthouse",
+        "website": "https://www.hcmadras.tn.nic.in/",
+        "wikidata": "Q502531",
+        "wikipedia": "en:Madras High Court"
+      }
+    },
+    {
+      "key": "ripon_building",
+      "label": "Ripon Building",
+      "required": false,
+      "candidates": 3,
+      "found": true,
+      "osm": "relation/60184",
+      "name": "Ripon Building - Greater Chennai Corporation",
+      "name_ta": "",
+      "lat": 13.081892,
+      "lon": 80.271579,
+      "inside": true,
+      "edge_m": 897.0,
+      "area_m2": 3290,
+      "length_m": 0,
+      "tags": {
+        "amenity": "townhall",
+        "building": "yes",
+        "building:colour": "white",
+        "building:levels": "3",
+        "building:material": "brick",
+        "government": "government",
+        "roof:colour": "red",
+        "roof:shape": "hipped",
+        "townhall:type": "city",
+        "type": "multipolygon"
+      }
+    },
+    {
+      "key": "chepauk_palace",
+      "label": "Chepauk Palace",
+      "required": false,
+      "candidates": 3,
+      "found": true,
+      "osm": "relation/14377429",
+      "name": "Chepauk Palace",
+      "name_ta": "",
+      "lat": 13.063648,
+      "lon": 80.281667,
+      "inside": true,
+      "edge_m": 1554.6,
+      "area_m2": 7591,
+      "length_m": 0,
+      "tags": {
+        "building": "yes",
+        "castle_type": "palace",
+        "historic": "castle",
+        "type": "multipolygon",
+        "wikidata": "Q5091701"
+      }
+    },
+    {
+      "key": "presidency_college",
+      "label": "Presidency College",
+      "required": false,
+      "candidates": 1,
+      "found": true,
+      "osm": "relation/14377740",
+      "name": "Presidency College, Chennai",
+      "name_ta": "மாநிலக் கல்லூரி, சென்னை",
+      "lat": 13.059508,
+      "lon": 80.280888,
+      "inside": true,
+      "edge_m": 1639.1,
+      "area_m2": 112738,
+      "length_m": 0,
+      "tags": {
+        "amenity": "college",
+        "email": "contactus@presidencycollegechennai.ac.in",
+        "phone": "+91 44 2854 4894",
+        "type": "multipolygon",
+        "website": "https://presidencycollegechennai.ac.in/",
+        "wikidata": "Q3276757",
+        "wikipedia": "en:Presidency College, Chennai"
+      }
+    },
+    {
+      "key": "senate_house",
+      "label": "Senate House",
+      "required": false,
+      "candidates": 1,
+      "found": true,
+      "osm": "way/23894473",
+      "name": "Senate House",
+      "name_ta": "",
+      "lat": 13.065089,
+      "lon": 80.282923,
+      "inside": true,
+      "edge_m": 1418.3,
+      "area_m2": 2948,
+      "length_m": 0,
+      "tags": {
+        "building": "yes",
+        "wikidata": "Q7450007",
+        "wikimedia_commons": "Category:Senate House (University of Madras)",
+        "wikipedia": "en:Senate House (University of Madras)"
+      }
+    },
+    {
+      "key": "pwd_building",
+      "label": "PWD building",
+      "required": false,
+      "candidates": 1,
+      "found": true,
+      "osm": "way/31897155",
+      "name": "Public Works Department",
+      "name_ta": "",
+      "lat": 13.061946,
+      "lon": 80.282163,
+      "inside": true,
+      "edge_m": 1500.7,
+      "area_m2": 9177,
+      "length_m": 0,
+      "tags": {
+        "building": "yes",
+        "historic": "building",
+        "office": "government"
+      }
+    },
+    {
+      "key": "st_marys_church",
+      "label": "St Mary's Church, Fort",
+      "required": false,
+      "candidates": 1,
+      "found": true,
+      "osm": "way/28746263",
+      "name": "St. Mary's Church",
+      "name_ta": "",
+      "lat": 13.078773,
+      "lon": 80.286674,
+      "inside": true,
+      "edge_m": 1011.4,
+      "area_m2": 759,
+      "length_m": 0,
+      "tags": {
+        "amenity": "place_of_worship",
+        "building": "yes",
+        "denomination": "protestant",
+        "religion": "christian"
+      }
+    },
+    {
+      "key": "fort_flagstaff",
+      "label": "Fort St George flagstaff",
+      "required": false,
+      "candidates": 0,
+      "found": false
+    },
+    {
+      "key": "kamarajar_salai",
+      "label": "Kamarajar Salai (road)",
+      "required": true,
+      "candidates": 13,
+      "found": true,
+      "osm": "way/369656802",
+      "name": "Kamarajar Salai",
+      "name_ta": "காமராஜர் சாலை",
+      "lat": 13.055798,
+      "lon": 80.281789,
+      "inside": true,
+      "edge_m": 1541.3,
+      "area_m2": 0,
+      "length_m": 2777,
+      "tags": {
+        "highway": "primary",
+        "lit": "yes",
+        "oneway": "yes",
+        "sidewalk": "both",
+        "surface": "asphalt"
+      },
+      "segments": 13,
+      "total_length_m": 6936
+    },
+    {
+      "key": "anna_salai",
+      "label": "Anna Salai (road)",
+      "required": true,
+      "candidates": 41,
+      "found": true,
+      "osm": "way/28138962",
+      "name": "Anna Salai",
+      "name_ta": "அண்ணா சாலை",
+      "lat": 13.076022,
+      "lon": 80.279046,
+      "inside": true,
+      "edge_m": 1546.4,
+      "area_m2": 0,
+      "length_m": 776,
+      "tags": {
+        "foot": "yes",
+        "highway": "primary",
+        "official_name": "Grand Southern Trunk Road",
+        "oneway": "yes",
+        "ref": "SHU88"
+      },
+      "segments": 41,
+      "total_length_m": 5393
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,111 @@
+{
+  "counts": {
+    "buildings": 24918,
+    "buildings_by_footprint": {
+      "google_open_buildings": 11528,
+      "microsoft_ml": 3024,
+      "openstreetmap": 10366
+    },
+    "heights": {
+      "estimated": 4883,
+      "google_open_buildings_2p5d_2023": 19082,
+      "osm_levels_x_3.1m": 950,
+      "osm_height": 3
+    },
+    "trees_mapped": 334,
+    "trees_illustrated": 15689,
+    "lamps_mapped": 13,
+    "lamps_illustrated": 6809,
+    "road_km": 367.7,
+    "rail_km": 70.3,
+    "traffic_paths": 125,
+    "landmarks": 14
+  },
+  "overture": {
+    "osm_duplicates_skipped": 14441,
+    "kept_Microsoft ML Buildings": 3093,
+    "kept_Google Open Buildings": 11835,
+    "too_small": 21,
+    "overlaps_osm": 2,
+    "on_water_sand_pitch_road": 375
+  },
+  "heights": {
+    "height_sources": {
+      "osm_levels_x_3.1m": 950,
+      "google_open_buildings_2p5d_2023": 19082,
+      "estimated": 4883,
+      "osm_height": 3
+    },
+    "osm_levels_vs_google": {
+      "n": 891,
+      "mean_abs_diff_m": 3.09,
+      "median_ratio": 1.043
+    }
+  },
+  "suppressed": {
+    "senate_house": 1,
+    "st_marys_church": 1,
+    "pwd_building": 1,
+    "presidency_college": 1,
+    "chennai_central": 3,
+    "high_court": 1,
+    "lic_building": 1,
+    "lighthouse": 1,
+    "ripon_building": 1,
+    "nehru_stadium": 2,
+    "chepauk_stadium": 1,
+    "chepauk_palace": 2
+  },
+  "sizes": {
+    "scene_json": 35236,
+    "scene_json_gz": 10962,
+    "world_pack_gz": 1087208,
+    "world_pack_raw": 2020824
+  },
+  "arrays": {
+    "land_first_ring": 2,
+    "land_ring_start": 2,
+    "land_xz": 172,
+    "cover_first_ring": 1518,
+    "cover_ring_start": 1575,
+    "cover_xz": 38854,
+    "cover_cls": 1517,
+    "road_first_ring": 1133,
+    "road_ring_start": 2133,
+    "road_xz": 64240,
+    "road_cls": 1132,
+    "mark_start": 177,
+    "mark_xz": 2590,
+    "mark_kind": 176,
+    "xing": 140,
+    "bld_first_ring": 24919,
+    "bld_ring_start": 24977,
+    "bld_xz": 230192,
+    "bld_h": 24918,
+    "bld_minh": 24918,
+    "bld_base": 24918,
+    "bld_cls": 24918,
+    "bld_hsrc": 24918,
+    "bld_fsrc": 24918,
+    "bld_seed": 24918,
+    "bld_chunk_start": 161,
+    "tree_xz": 32046,
+    "tree_attr": 64092,
+    "tree_y": 16023,
+    "lamp_xz": 13644,
+    "lamp_attr": 13644,
+    "lamp_y": 6822,
+    "trf_start": 126,
+    "trf_xz": 2922,
+    "trf_attr": 500,
+    "train_mrts_south_xyz": 468,
+    "train_mrts_north_xyz": 498,
+    "train_central_xyz": 24,
+    "rail_start": 154,
+    "rail_xz": 2930,
+    "rail_attr": 306,
+    "terrain_h": 73656,
+    "coast_sdf": 492312
+  },
+  "seconds": 32
+}

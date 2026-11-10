@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.venv/
+raw/
+.vercel/
+.DS_Store
+*.log
+.playwright-mcp/
+reports/_tmp/
+__pycache__/
+*.pyc
