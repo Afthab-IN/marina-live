@@ -5,6 +5,8 @@ export const shared = {
   uTime: { value: 0 },
   uNight: { value: 0 },
   uSources: { value: 0 },
+  /** share of windows lit (0 by day, about 0.45 in the evening) */
+  uLit: { value: 0 },
 };
 
 const GLSL_HASH = /* glsl */ `
@@ -69,6 +71,7 @@ vFac = aFac; vInfo = aInfo; vH = aH;`);
       .replace('#include <common>', `#include <common>
 uniform float uNight;
 uniform float uSources;
+uniform float uLit;
 varying vec2 vFac;
 varying vec4 vInfo;
 varying float vH;
@@ -100,12 +103,28 @@ ${FACADE}`)
     vec3 glass = lin(vec3(0.33, 0.39, 0.44)) * (0.75 + 0.5 * mhash2(floor(cell)));
     col = mix(col, glass, clamp(win + shop * 0.9, 0.0, 1.0) * 0.9 * detail);
     col = mix(col, col * 0.84, (1.0 - detail) * tall);
+    // night: a share of windows lit, warm in homes and cooler in offices; shops glow at street level
+    if (uNight > 0.01) {
+      float office = isCls(cls, 3.0) || isCls(cls, 5.0) ? 1.0 : 0.0;
+      float pick = mhash2(floor(cell) + vec2(seed * 7.13, seed * 3.7));
+      float share = uLit * (0.7 + 0.6 * mhash(seed + 5.5)) * (1.0 + 0.4 * office);
+      float isLit = step(pick, share) * win;
+      vec3 warm = vec3(1.0, 0.68, 0.34), cool = vec3(0.78, 0.86, 1.0);
+      vec3 lampC = mix(warm, cool, office * step(0.35, mhash(seed + floor(cell.y) * 1.7)));
+      // far away the windows are sub-pixel: light whole bays of random floors instead, so the
+      // city reads as speckled lit floors rather than a flat glow
+      float far = 1.0 - detail;
+      vec2 bay = floor(vec2(u / (spacing * 3.0), v / floorH));
+      float bayLit = step(mhash2(bay + vec2(seed * 1.31, seed * 0.77)), share * 0.8) * step(1.0, bay.y) * (1.0 - top);
+      totalEmissiveRadiance += uNight * (lampC * (1.5 * isLit * detail + 0.42 * bayLit * far * tall)
+                               + warm * shop * 1.1 * step(0.3, uLit) * detail);
+    }
   }
   if (uSources > 0.5) col = sourceColor(hs) * (roof > 0.5 ? 1.0 : 0.82);
   diffuseColor.rgb = col;
 }`);
   };
-  m.customProgramCacheKey = () => 'building-v1';
+  m.customProgramCacheKey = () => 'building-v3';
   return m;
 }
 

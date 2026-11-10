@@ -5,6 +5,11 @@ import { CameraRig, type View } from './scene/camera';
 import { Sun } from './scene/sun';
 import { buildingMaterial, decalMaterial, plinthMaterial, seaMaterial, shared, terrainMaterial } from './world/materials';
 import { mesh } from './world/meshes';
+import { buildLamps } from './world/lamps';
+import { backdrop } from './sky/background';
+import { lightAt } from './sky/lighting';
+import { lightPanel, type TimeState } from './ui/lightPanel';
+import { loadLandmarks, type LoadedLandmarks } from './landmarks';
 import type { BuildRequest, BuildResult } from './worker/build';
 
 const $ = <T extends HTMLElement>(s: string) => document.querySelector(s) as T;
@@ -59,7 +64,8 @@ async function main() {
   progress(0.92, 'Filling the sea…');
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0c141a);
+  const sky = backdrop();
+  scene.add(sky.mesh);
   const world = new THREE.Group();
   scene.add(world);
 
@@ -88,8 +94,43 @@ async function main() {
   world.add(sea);
 
   const sun = new Sun(scene, lite ? 2048 : 4096);
-  sun.setAngles(235, 48);
-  seaMat.uniforms.uSunDir.value.copy(sun.dir);
+  const moon = new THREE.DirectionalLight(0x9fb4d9, 0);
+  moon.position.set(0.55, 0.62, 0.56).multiplyScalar(1000);
+  scene.add(moon);
+  const lamps = buildLamps(arrays, data.meta.quant);
+  world.add(lamps.group);
+
+  // time of day and season: Chennai, IST; URL ?t=hour&m=month
+  const now = new Date(Date.now() + (5.5 * 60 + new Date().getTimezoneOffset()) * 60000);
+  const time: TimeState = {
+    hour: Number(params.get('t') ?? 15.5),
+    month: Number(params.get('m') ?? now.getMonth() + (now.getDate() - 1) / 30.5),
+  };
+  let light = lightAt(time.month, time.hour);
+  const applyTime = () => {
+    light = lightAt(time.month, time.hour);
+    sun.dir.copy(light.sunDir);
+    sun.light.color.copy(light.sunColor);
+    sun.light.intensity = light.sunIntensity;
+    // keep the light's shadow flag (toggling it recompiles every shader); just stop redrawing the map at night
+    renderer.shadowMap.autoUpdate = light.sunIntensity > 0.05;
+    sun.fill.color.copy(light.sky);
+    sun.fill.groundColor.copy(light.ground);
+    sun.fill.intensity = light.hemi;
+    moon.color.copy(light.moonColor);
+    moon.intensity = light.moon;
+    sky.mat.uniforms.uTop.value.copy(light.zenith);
+    sky.mat.uniforms.uBottom.value.copy(light.horizon);
+    renderer.toneMappingExposure = 1.05 * light.exposure;
+    shared.uNight.value = light.night;
+    shared.uLit.value = light.lit;
+    const daylit = light.sunIntensity > 0.05;
+    seaMat.uniforms.uSunDir.value.copy(daylit ? light.sunDir : light.moonDir);
+    seaMat.uniforms.uSunColor.value.copy(daylit ? light.sunColor : light.moonColor).multiplyScalar(daylit ? 1 : 0.5);
+    seaMat.uniforms.uAmbient.value.copy(light.sky).multiplyScalar(light.hemi * 0.8);
+    panel.show(light);
+  };
+  const panel = lightPanel($('#light'), time, applyTime);
 
   const rig = new CameraRig(renderer.domElement, data.meta.frame_m);
   const whole: View = { x: (fx0 + fx1) / 2, z: (fz0 + fz1) / 2, span: (fz1 - fz0) * 0.62, azimuth: 1.2 };
@@ -104,12 +145,30 @@ async function main() {
   rig.set(rig.aspect < 0.8 ? portrait : whole);
   if (matchMedia('(pointer: coarse)').matches) $('#hint').textContent = 'Drag to move · Pinch to zoom · Twist to turn';
 
-  // places (more arrive with the landmarks in phase 3)
+  // camera shortcuts: the whole corridor, then the landmarks in the brief's order
   const places = $('#places');
-  const wholeBtn = document.createElement('button');
-  wholeBtn.textContent = 'Whole corridor';
-  wholeBtn.addEventListener('click', () => rig.flyTo(rig.aspect < 0.8 ? portrait : whole));
-  places.append(wholeBtn);
+  const addPlace = (label: string, go: () => void) => {
+    const b = document.createElement('button');
+    b.textContent = label;
+    b.addEventListener('click', go);
+    places.append(b);
+  };
+  addPlace('Whole corridor', () => rig.flyTo(rig.aspect < 0.8 ? portrait : whole));
+  const ORDER = ['chepauk_stadium', 'lighthouse', 'lic_building', 'chennai_central', 'nehru_stadium', 'marina_beach', 'fort_st_george'];
+  for (const key of ORDER) {
+    const lm = data.landmarks.find((l) => l.key === key && l.camera);
+    if (!lm) continue;
+    const span = (lm.span ?? 400) * (rig.aspect < 0.8 ? 0.7 : 1);
+    addPlace(lm.title, () => rig.flyTo({ x: lm.x, z: lm.z, span }));
+  }
+
+  // hand-modelled landmarks arrive after the map is on screen
+  let landmarks: LoadedLandmarks | null = null;
+  loadLandmarks(data, world).then((l) => {
+    landmarks = l;
+    (window as any).__app.landmarks = l;
+    console.info(`landmarks: ${l.built.length} built${l.failed.length ? `, failed: ${l.failed.join(', ')}` : ''}`);
+  });
 
   window.addEventListener('keydown', (e: KeyboardEvent) => {
     if (e.target instanceof HTMLInputElement) return;
@@ -117,6 +176,7 @@ async function main() {
     if (k === 'q') rig.rotateBy(Math.PI / 2);
     if (k === 'e') rig.rotateBy(-Math.PI / 2);
     if (k === 'h') document.body.classList.toggle('bare');
+    if (k === 'n') { time.hour = light.night > 0.5 ? 15.5 : panel.quick('night'); applyTime(); }
   });
 
   // shadow fit: the four screen corners on the ground, plus the same points raised
@@ -142,8 +202,10 @@ async function main() {
     last = now;
     shared.uTime.value += dt;
     rig.update(dt);
+    landmarks?.update(shared.uTime.value, shared.uNight.value);
+    lamps.update(shared.uNight.value, rig.metresPerPixel());
     rig.cam.getWorldDirection(seaMat.uniforms.uViewDir.value).negate();
-    sun.fit(shadowPoints());
+    if (renderer.shadowMap.autoUpdate) sun.fit(shadowPoints());
     renderer.render(scene, rig.cam);
     fpsN++;
     if (now - fpsT > 2000) { (window as any).__fps = (fpsN * 1000) / (now - fpsT); fpsT = now; fpsN = 0; }
@@ -154,9 +216,10 @@ async function main() {
       console.info(`built in ${Math.round(performance.now() - t0)} ms`, JSON.stringify(built.stats));
     }
   };
+  applyTime();
   renderer.setAnimationLoop(loop);
 
-  (window as any).__app = { renderer, scene, rig, sun, data, arrays, built: built.stats, lite };
+  (window as any).__app = { renderer, scene, rig, sun, data, arrays, built: built.stats, lite, time, applyTime, lamps, get light() { return light; } };
 }
 
 main().catch((err: Error) => {

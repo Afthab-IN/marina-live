@@ -70,3 +70,27 @@ a { color: #f3d29c; }
   #hint { font-size: 10.5px; margin-top: 6px; }
   #credit p { font-size: 10px; }
 }
+
+/* time and season panel */
+.light { width: min(440px, 100%); }
+.row { display: grid; grid-template-columns: 60px minmax(0, 1fr); align-items: start; gap: 10px; }
+.row > div { min-width: 0; }
+.row + .row, details .row { margin-top: 8px; }
+.row label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); padding-top: 1px; }
+.value { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 8px; font-size: 12px; margin-bottom: 3px; }
+.value b { font-weight: 600; white-space: nowrap; }
+.note { color: var(--dim); font-size: 11px; text-align: right; }
+input[type=range] { display: block; width: 100%; min-width: 0; accent-color: var(--sand); margin: 0; height: 20px; }
+.quick { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin-top: 5px; }
+.quick button { padding: 4px 2px; font-size: 11px; border-radius: 6px; overflow: hidden; text-overflow: ellipsis; }
+summary { cursor: pointer; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); margin-top: 9px; list-style: none; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: " +"; }
+details[open] summary::after { content: " \2013"; }
+.sun-fact { margin-top: 8px; font-size: 11px; }
+@media (min-width: 721px) { summary { display: none; } }
+@media (max-width: 720px) {
+  .light { width: 100%; order: -1; }
+  .row { grid-template-columns: 44px minmax(0, 1fr); gap: 8px; }
+  .note { display: none; }
+}
