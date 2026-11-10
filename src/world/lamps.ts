@@ -57,16 +57,26 @@ void main() {
     pools.setMatrixAt(i, m);
   }
   for (const im of [posts, heads, pools]) { im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); }
+  // Sources view: mapped lamps in gold, illustrated ones in grey
+  const white = new THREE.Color(1, 1, 1), gold = new THREE.Color(0xf2d14b), grey = new THREE.Color(0x8c918c);
+  const setHeadColors = (sources: boolean) => {
+    for (let i = 0; i < n; i++) heads.setColorAt(i, !sources ? white : attr[2 * i + 1] ? gold : grey);
+    heads.instanceColor!.needsUpdate = true;
+  };
+  setHeadColors(false);
+  let sourcesOn = false;
   group.add(posts, heads, pools);
   return {
     group, count: n, mapped,
+    setSources(on: boolean) { sourcesOn = on; setHeadColors(on); },
     update(night: number, metresPerPixel: number) {
       headMat.emissiveIntensity = night * 2.2;
       poolMat.uniforms.uNight.value = night;
       pools.visible = night > 0.02;
       // posts are sub-pixel when zoomed far out; skip drawing them there
       posts.visible = metresPerPixel < 1.4;
-      heads.visible = metresPerPixel < 1.4 || night > 0.05;
+      heads.visible = metresPerPixel < 1.4 || night > 0.05 || sourcesOn;
+      if (sourcesOn) heads.scale.setScalar(1);
     },
   };
 }

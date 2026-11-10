@@ -154,7 +154,7 @@ async function main() {
   const toggles: Record<string, (on: boolean) => void> = {
     labels: (on) => labels.setVisible(on),
     traffic: (on) => traffic.setEnabled(on),
-    sources: (on) => { shared.uSources.value = on ? 1 : 0; trees.setSources(on); legend.hidden = !on; },
+    sources: (on) => { shared.uSources.value = on ? 1 : 0; trees.setSources(on); lamps.setSources(on); legend.hidden = !on; },
     lens: (on) => { lens.enabled = on; },
   };
   document.querySelectorAll<HTMLButtonElement>('[data-toggle]').forEach((b) => b.addEventListener('click', () => {
@@ -209,7 +209,6 @@ async function main() {
   resize();
   const portrait: View = { ...whole, span: (fx1 - fx0) * 0.92, azimuth: 0.35 };
   rig.set(rig.aspect < 0.8 ? portrait : whole);
-  if (matchMedia('(pointer: coarse)').matches) $('#hint').textContent = 'Drag to move · Pinch to zoom · Twist to turn';
 
   // camera shortcuts: the whole corridor, then the landmarks in the brief's order
   const places = $('#places');
@@ -245,22 +244,50 @@ async function main() {
     if (k === 'n') { time.hour = light.night > 0.5 ? 15.5 : panel.quick('night'); applyTime(); }
   });
 
-  // shadow fit: the four screen corners on the ground, plus the same points raised
-  const ndc = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
-  const fwd = new THREE.Vector3(), p = new THREE.Vector3();
+  // shadow fit: where the screen corners meet the ground (clamped towards the horizon), plus raised copies
+  const ndc = [[-1, -1], [1, -1], [1, 1], [-1, 1], [0, -1], [0, 1]];
+  const fwd = new THREE.Vector3(), p = new THREE.Vector3(), ray = new THREE.Vector3();
   const shadowPoints = () => {
     const pts: THREE.Vector3[] = [];
-    rig.cam.getWorldDirection(fwd);
+    const cam = rig.cam;
+    cam.getWorldDirection(fwd);
+    const persp = rig.mode === 'orbit';
+    const maxD = THREE.MathUtils.clamp(cam.position.distanceTo(rig.target) * 2.6, 200, 2600);
     for (const [x, y] of ndc) {
-      p.set(x, y, -1).unproject(rig.cam);
-      const t = (5 - p.y) / fwd.y;
-      const g = p.clone().addScaledVector(fwd, t);
+      let g: THREE.Vector3;
+      if (persp) {
+        ray.set(x, y, 0.5).unproject(cam).sub(cam.position).normalize();
+        const t = ray.y < -0.01 ? (5 - cam.position.y) / ray.y : maxD;
+        g = cam.position.clone().addScaledVector(ray, Math.min(t, maxD));
+        g.y = 5;
+      } else {
+        p.set(x, y, -1).unproject(cam);
+        g = p.clone().addScaledVector(fwd, (5 - p.y) / fwd.y);
+      }
       g.x = THREE.MathUtils.clamp(g.x, fx0 - 50, fx1 + 50);
       g.z = THREE.MathUtils.clamp(g.z, fz0 - 50, fz1 + 50);
       pts.push(g, g.clone().setY(90));
     }
     return pts;
   };
+
+  // view modes
+  const hint = $('#hint');
+  const coarse = matchMedia('(pointer: coarse)').matches;
+  const hints = {
+    iso: coarse ? 'Drag to move · Pinch to zoom · Twist to turn' : 'Drag to move · Right-drag to turn · Scroll to zoom',
+    orbit: coarse ? 'Drag to orbit · Pinch to zoom · Two fingers to move' : 'Drag to orbit · Right-drag to move · Scroll to zoom',
+  };
+  document.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach((b) => {
+    b.hidden = false;
+    b.addEventListener('click', () => {
+      rig.setMode(b.dataset.mode as 'iso' | 'orbit');
+      document.querySelectorAll('[data-mode]').forEach((x) => x.setAttribute('aria-pressed', String((x as HTMLElement).dataset.mode === rig.mode)));
+      hint.textContent = hints[rig.mode];
+      seaMat.uniforms.uPersp.value = rig.mode === 'orbit' ? 1 : 0;
+    });
+  });
+  hint.textContent = hints.iso;
 
   let frames = 0, last = performance.now(), fpsT = last, fpsN = 0, slow = 0;
   const loop = (now: number) => {
@@ -274,6 +301,7 @@ async function main() {
     trains.update(shared.uTime.value);
     traffic.update(dt, shared.uNight.value);
     rig.cam.getWorldDirection(seaMat.uniforms.uViewDir.value).negate();
+    seaMat.uniforms.uCamPos.value.copy(rig.cam.position);
     if (renderer.shadowMap.autoUpdate) sun.fit(shadowPoints());
     lens.render(renderer, scene, rig.cam);
     labels.update(rig.cam, stage.clientWidth, stage.clientHeight, rig.metresPerPixel());

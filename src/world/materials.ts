@@ -153,6 +153,8 @@ export function seaMaterial(coast: THREE.DataTexture, coastBox: THREE.Vector4, c
       uSunColor: { value: new THREE.Color(1, 0.95, 0.88) },
       uAmbient: { value: new THREE.Color(0.55, 0.62, 0.7) },
       uViewDir: { value: new THREE.Vector3(0, 1, 0) },
+      uCamPos: { value: new THREE.Vector3() },
+      uPersp: { value: 0 },
     },
     vertexShader: /* glsl */ `
 uniform float uTime;
@@ -185,6 +187,8 @@ uniform vec3 uSunDir;
 uniform vec3 uSunColor;
 uniform vec3 uAmbient;
 uniform vec3 uViewDir;
+uniform vec3 uCamPos;
+uniform float uPersp;
 varying vec3 vW;
 varying float vDist;
 float h2(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -217,7 +221,8 @@ void main() {
   float foam = clamp(crest * zone * (0.55 + 0.45 * n2(p * 0.3)) + swash * 0.85, 0.0, 1.0);
   col = mix(col, vec3(0.92, 0.94, 0.93) * (uAmbient * 0.6 + uSunColor * 0.5), foam);
   // sun glint
-  vec3 v = uViewDir; // orthographic: every ray is parallel
+  // orthographic rays are all parallel; the orbit camera needs the per-pixel view vector
+  vec3 v = uPersp > 0.5 ? normalize(uCamPos - vW) : uViewDir;
   vec3 h = normalize(v + uSunDir);
   float spec = pow(max(dot(n, h), 0.0), 120.0) * (1.0 - foam);
   col += uSunColor * spec * 1.4 * (1.0 - uNight * 0.85);

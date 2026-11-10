@@ -41,7 +41,8 @@ LANDMARKS = {
     "nehru_stadium": dict(title="Nehru Stadium", model=True, camera=True, suppress="inside", span=470),
     "marina_beach": dict(title="Marina Beach", model=False, camera=True, suppress=None, span=1500),
     "fort_st_george": dict(title="Fort St George", model=True, camera=True, suppress=None, span=900),
-    "napier_bridge": dict(title="Napier Bridge", model=True, camera=False, suppress=None),
+    # the bridge outline (man_made=bridge) spans both carriageways
+    "napier_bridge": dict(title="Napier Bridge", model=True, camera=False, suppress=None, building="way/1080629434"),
     # campus polygons in OSM: the model replaces the main heritage block only
     "high_court": dict(title="Madras High Court", model=True, camera=False, suppress="self", building="way/369960494"),
     "ripon_building": dict(title="Ripon Building", model=True, camera=False, suppress="self"),
@@ -84,7 +85,7 @@ def clip_path(pts, s, frame):
 
 
 # world unit vectors (x east, z south) for landmarks whose front is known; others face the nearest main road
-FRONT_OVERRIDE = {"chennai_central": [0.0, 1.0]}
+FRONT_OVERRIDE = {"chennai_central": [0.0, 1.0], "napier_bridge": [0.0, 0.0]}
 
 
 def load_osm() -> OsmIndex:
