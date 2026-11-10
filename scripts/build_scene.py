@@ -83,6 +83,10 @@ def clip_path(pts, s, frame):
     return pts[a:b + 1], s[a:b + 1] - s[a]
 
 
+# world unit vectors (x east, z south) for landmarks whose front is known; others face the nearest main road
+FRONT_OVERRIDE = {"chennai_central": [0.0, 1.0]}
+
+
 def load_osm() -> OsmIndex:
     files = sorted((RAW / "overpass").glob("osm-full-*.json"))
     if not files:
@@ -198,6 +202,8 @@ def main():
     coast_dist = Field(sdf, sxs[0], szs[0], sdf_step)
 
     # ---------------------------------------------------------- landmarks
+    major_lines = [r["line"] for r in roads if r["tags"]["highway"] in ("trunk", "primary", "secondary")]
+    major_tree = STRtree(major_lines)
     lm_out, suppress_polys, lm_geoms = [], [], {}
     for key, spec in LANDMARKS.items():
         r = found.get(key)
@@ -233,6 +239,29 @@ def main():
                 rec[k.replace(":", "_")] = tags[k]
         if spec.get("span"):
             rec["span"] = spec["span"]
+        if g.geom_type in ("Polygon", "MultiPolygon", "LineString"):
+            if key in FRONT_OVERRIDE:
+                rec["front"] = FRONT_OVERRIDE[key]
+            else:
+                near = major_lines[major_tree.nearest(g.centroid)]
+                q = near.interpolate(near.project(g.centroid))
+                dx, dz = q.x - g.centroid.x, q.y - g.centroid.y
+                n = math.hypot(dx, dz) or 1.0
+                rec["front"] = [round(dx / n, 3), round(dz / n, 3)]
+        if key == "fort_st_george" and g.geom_type in ("Polygon", "MultiPolygon"):
+            # mapped ramparts, bastions and ravelins (barrier=city_wall) for the fort model
+            zone = g.buffer(80)
+            walls = []
+            for w in osm.ways.values():
+                t = w.get("tags") or {}
+                if t.get("barrier") != "city_wall" and t.get("historic") != "citywalls":
+                    continue
+                xz = osm.way_xz(w)
+                if xz is None or len(xz) < 2 or not zone.intersects(LineString(xz)):
+                    continue
+                line = LineString(xz).simplify(0.5)
+                walls.append(dict(name=t.get("name", ""), pts=[round(float(v), 1) for v in np.asarray(line.coords).ravel()]))
+            rec["walls"] = walls
         if spec["suppress"]:
             suppress_polys.append((key, spec["suppress"], g))
         lm_out.append(rec)

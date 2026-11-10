@@ -9,6 +9,10 @@ export interface Landmark {
   model: boolean; camera: boolean; x: number; z: number; ground: number;
   angle?: number; length?: number; width?: number; area?: number; ring?: number[]; line?: number[];
   height?: string; building_levels?: string; span?: number; replaces?: number;
+  /** world unit vector (x east, z south) towards the landmark's main road */
+  front?: [number, number];
+  /** mapped fort walls (world x, z pairs) */
+  walls?: { name: string; pts: number[] }[];
 }
 
 export interface Stop { name: string; name_ta: string; s: number }
