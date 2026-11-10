@@ -85,6 +85,7 @@ def clip_path(pts, s, frame):
 
 
 # world unit vectors (x east, z south) for landmarks whose front is known; others face the nearest main road
+FLATTEN = {"chepauk_stadium", "nehru_stadium"}
 FRONT_OVERRIDE = {"chennai_central": [0.0, 1.0], "napier_bridge": [0.0, 0.0]}
 
 
@@ -215,6 +216,14 @@ def main():
         if g is None:
             log(f"landmark {key}: geometry for {r['osm']} missing from the extract")
             continue
+        if key in FLATTEN and g.geom_type in ("Polygon", "MultiPolygon"):
+            # stadium bowls sit on level ground: flatten the terrain inside the outline, easing out over 40 m
+            filled = unary_union([shapely.Polygon(q.exterior) for q in polygon_parts(g)])
+            level = float(terrain.at(filled.centroid.x, filled.centroid.y))
+            gx, gz = np.meshgrid(ter["x0"] + ter["step"] * np.arange(ter["cols"]), ter["z0"] + ter["step"] * np.arange(ter["rows"]))
+            d = shapely.distance(filled, shapely.points(gx.ravel(), gz.ravel())).reshape(gx.shape)
+            w = np.clip(1 - d / 40.0, 0, 1)
+            ter["h"][:] = ter["h"] * (1 - w) + level * w
         if key == "chennai_central":
             g = central_building(osm, g)
         if spec.get("building"):
