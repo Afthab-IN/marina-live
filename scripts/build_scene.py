@@ -229,6 +229,13 @@ def main():
             L, W = rect_dims(g)
             rec.update(angle=round(principal_angle(g), 4), length=round(L, 1), width=round(W, 1),
                        area=round(g.area), ring=ring_list(g))
+            main = g if g.geom_type == "Polygon" else max(g.geoms, key=lambda q: q.area)
+            if len(main.interiors):
+                # courtyards (e.g. Ripon Building)
+                rec["holes"] = [[round(float(v), 1) for v in np.asarray(r.coords)[:-1].ravel()] for r in main.interiors]
+            if g.geom_type == "MultiPolygon":
+                # every separate part (e.g. Chepauk Palace: Kalas Mahal and Humayun Mahal)
+                rec["parts"] = [ring_list(q) for q in sorted(g.geoms, key=lambda q: -q.area)]
         elif g.geom_type in ("LineString", "MultiLineString"):
             line = g if g.geom_type == "LineString" else max(g.geoms, key=lambda q: q.length)
             cc = np.asarray(line.coords)

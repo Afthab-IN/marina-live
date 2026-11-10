@@ -13,6 +13,10 @@ export interface Landmark {
   front?: [number, number];
   /** mapped fort walls (world x, z pairs) */
   walls?: { name: string; pts: number[] }[];
+  /** every footprint part (world x, z rings) for multi-part landmarks */
+  parts?: number[][];
+  /** courtyards inside the main footprint (world x, z rings) */
+  holes?: number[][];
 }
 
 export interface Stop { name: string; name_ta: string; s: number }
