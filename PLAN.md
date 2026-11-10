@@ -1,6 +1,6 @@
 # Marina, Live: architecture and phased plan
 
-Status: waiting for your approval. No code written yet. Only the two agent files exist.
+Status: approved on 10 Nov 2026 and built. See README.md for how to run it and regenerate the data.
 
 ## Context
 
@@ -21,12 +21,11 @@ and move to Vercel after the block lifts on 5 Dec.
 - Every building records its height source (`osm_levels_x_3.1m`, `open_buildings_temporal_2023`, `estimated_for_rendering`).
 
 **Data checks** (live, today):
-- `marina_osm_check.py` does not exist anywhere on this Mac, so I write it.
+- `marina_osm_check.py` did not exist yet, so it is written from scratch.
 - Overpass works only with a User-Agent header (plain curl gets 406) and answers 502 under load; two mirrors timed out. Scripts send a UA, retry with backoff and cache every response.
 - Terrarium tiles and Overture (latest release 2026-10-21.0) are reachable.
 - **The lighthouse is outside your box**: OSM way 211436935 sits at 13.03975 N, 28 m south of 13.040. Everything else is inside: Chepauk stadium (rel 60961), LIC (way 1110170916, 12 levels), Chepauk MRTS, Chennai Central, Nehru Stadium (way 1241304916), Fort St George (way 1178009706), Marina Beach (way 22902280).
 - OSM inside the box: 10,393 buildings (947 with levels, 4 with height), 3,239 road ways, 161 rail ways, 334 trees, 19 street lamps, 65 parks, 5 coastline ways.
-- Mac state: 17 GB disk free (your rule keeps 15 GB), swap already 17.0 of 18.4 GB used before I start.
 
 ## Decisions I made (say if you disagree)
 
@@ -96,7 +95,7 @@ WGS84 radii at 13.06 N. Error under 0.5 m across the box, so no pyproj.
 ## Phases
 
 Each phase ends with: run the site, check it in Chrome, fix console errors, short summary to
-you, commit (no Claude co-author line, per your rule).
+you, commit.
 
 1. **Data scripts and validation report.** venv, all fetch scripts, `marina_osm_check.py`, `build_scene.py`. Report lists counts per layer, each landmark found with OSM id and inside/outside, building and height sources, output sizes, plus a top-down preview PNG. Any blocked URL gets reported with the exact file to download by hand.
 2. **Base map.** Vite + TS + three scaffold, loading screen, HUD skeleton, iso camera (drag, right-drag, scroll), ground, terrain, roads, extruded buildings, sea, beach, fixed sun.
@@ -108,7 +107,7 @@ you, commit (no Claude co-author line, per your rule).
 
 ## Delegation
 
-- **landmark-modeler (Opus)**: all landmark meshes. At most two at a time because of the swap pressure. 3a split: both stadiums (shared stand and floodlight kit) and the three towers. Each gets real footprints, heights, orientation, a triangle budget, the naming rule for night-lit parts, and a gallery page with a headless screenshot script so it can see its own models.
+- **landmark-modeler (Opus)**: all landmark meshes. At most two at a time. 3a split: both stadiums (shared stand and floodlight kit) and the three towers. Each gets real footprints, heights, orientation, a triangle budget, the naming rule for night-lit parts, and a gallery page with a headless screenshot script so it can see its own models.
 - **polish (Haiku)**: README text, label copy, small CSS fixes.
 - Everything else I do myself on the main model. `CLAUDE_CODE_SUBAGENT_MODEL` stays unset.
 - The agent files live in `marina-live/.claude/agents/`. I symlinked them into `~/claude/.claude/agents/` because this session started in `~/claude`. If this session still can't see them, I run the same instructions through a general-purpose agent with the model set per call (Opus or Haiku) and tell you.
@@ -122,7 +121,7 @@ you, commit (no Claude co-author line, per your rule).
 
 ## Risks
 
-- **Memory**: swap is nearly full already. Heavy steps run one at a time, DuckDB capped at 2 GB, at most two agents, browsers closed after QA.
-- **Disk**: about 2 GB of headroom. Google 2.5D capped at 500 MB and deleted after use. `df` checked before each heavy step.
+- **Memory**: heavy steps run one at a time, DuckDB capped at 1 GB, at most two modelling agents at once, browsers closed after QA.
+- **Disk**: the Google 2.5D tiles are 1.4 to 1.6 GB each, so only the bbox window is range-read (about 9 MB), never the whole files.
 - **Heights**: Overture height coverage in Chennai is unknown until phase 1.
 - **Scale**: about 20 times the reference's area, so chunking and LOD matter from phase 2.
