@@ -87,6 +87,9 @@ def osm_buildings(osm, frame) -> list[dict]:
             continue
         if parse_float(t.get("layer"), 0) < 0:
             continue
+        # the fort ramparts are tagged building=yes too; the Fort St George model draws them
+        if t.get("barrier") == "city_wall" or t.get("historic") == "citywalls":
+            continue
         g = osm.way_geometry(w)
         if g is not None and g.geom_type in ("Polygon", "MultiPolygon"):
             add("w", w["id"], g, t)

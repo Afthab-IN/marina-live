@@ -1,21 +1,21 @@
 {
   "counts": {
-    "buildings": 24918,
+    "buildings": 24898,
     "buildings_by_footprint": {
       "google_open_buildings": 11528,
       "microsoft_ml": 3024,
-      "openstreetmap": 10366
+      "openstreetmap": 10346
     },
     "heights": {
-      "estimated": 4883,
-      "google_open_buildings_2p5d_2023": 19082,
+      "estimated": 4868,
+      "google_open_buildings_2p5d_2023": 19077,
       "osm_levels_x_3.1m": 950,
       "osm_height": 3
     },
     "trees_mapped": 334,
-    "trees_illustrated": 15689,
+    "trees_illustrated": 15752,
     "lamps_mapped": 13,
-    "lamps_illustrated": 6809,
+    "lamps_illustrated": 6713,
     "road_km": 367.7,
     "rail_km": 70.3,
     "traffic_paths": 125,
@@ -32,8 +32,8 @@
   "heights": {
     "height_sources": {
       "osm_levels_x_3.1m": 950,
-      "google_open_buildings_2p5d_2023": 19082,
-      "estimated": 4883,
+      "google_open_buildings_2p5d_2023": 19077,
+      "estimated": 4868,
       "osm_height": 3
     },
     "osm_levels_vs_google": {
@@ -57,10 +57,10 @@
     "chepauk_palace": 2
   },
   "sizes": {
-    "scene_json": 35236,
-    "scene_json_gz": 10962,
-    "world_pack_gz": 1087208,
-    "world_pack_raw": 2020824
+    "scene_json": 39188,
+    "scene_json_gz": 12397,
+    "world_pack_gz": 1086248,
+    "world_pack_raw": 2019696
   },
   "arrays": {
     "land_first_ring": 2,
@@ -78,23 +78,23 @@
     "mark_xz": 2590,
     "mark_kind": 176,
     "xing": 140,
-    "bld_first_ring": 24919,
-    "bld_ring_start": 24977,
-    "bld_xz": 230192,
-    "bld_h": 24918,
-    "bld_minh": 24918,
-    "bld_base": 24918,
-    "bld_cls": 24918,
-    "bld_hsrc": 24918,
-    "bld_fsrc": 24918,
-    "bld_seed": 24918,
+    "bld_first_ring": 24899,
+    "bld_ring_start": 24957,
+    "bld_xz": 229878,
+    "bld_h": 24898,
+    "bld_minh": 24898,
+    "bld_base": 24898,
+    "bld_cls": 24898,
+    "bld_hsrc": 24898,
+    "bld_fsrc": 24898,
+    "bld_seed": 24898,
     "bld_chunk_start": 161,
-    "tree_xz": 32046,
-    "tree_attr": 64092,
-    "tree_y": 16023,
-    "lamp_xz": 13644,
-    "lamp_attr": 13644,
-    "lamp_y": 6822,
+    "tree_xz": 32172,
+    "tree_attr": 64344,
+    "tree_y": 16086,
+    "lamp_xz": 13452,
+    "lamp_attr": 13452,
+    "lamp_y": 6726,
     "trf_start": 126,
     "trf_xz": 2922,
     "trf_attr": 500,
@@ -107,5 +107,5 @@
     "terrain_h": 73656,
     "coast_sdf": 492312
   },
-  "seconds": 32
+  "seconds": 85
 }

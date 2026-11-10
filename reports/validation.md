@@ -1,6 +1,6 @@
 # Marina, Live: data validation report
 
-Generated 2026-11-10 by `scripts/report.py`.
+Generated 2026-11-11 by `scripts/report.py`.
 
 ## Area
 
@@ -80,18 +80,18 @@ Notes:
 
 ## Build
 
-**Buildings: 24,918**
+**Buildings: 24,898**
 
 | Footprint source | Buildings |
 |---|---:|
 | google_open_buildings | 11,528 (46%) |
-| openstreetmap | 10,366 (42%) |
+| openstreetmap | 10,346 (42%) |
 | microsoft_ml | 3,024 (12%) |
 
 | Height source | Buildings |
 |---|---:|
-| google_open_buildings_2p5d_2023 | 19,082 (77%) |
-| estimated | 4,883 (20%) |
+| google_open_buildings_2p5d_2023 | 19,077 (77%) |
+| estimated | 4,868 (20%) |
 | osm_levels_x_3.1m | 950 (4%) |
 | osm_height | 3 (0%) |
 
@@ -101,8 +101,8 @@ Overture ML footprints kept: Google 11,835, Microsoft 3,093. Dropped: 2 overlapp
 
 | Layer | Mapped | Illustrated |
 |---|---:|---:|
-| Trees | 334 | 15,689 |
-| Street lamps | 13 | 6,809 |
+| Trees | 334 | 15,752 |
+| Street lamps | 13 | 6,713 |
 
 Roads: 367.7 km. Rail: 70.3 km. Traffic paths: 125. Landmarks with hand models: 14.
 
@@ -116,7 +116,7 @@ Trains (illustrated, on mapped track):
 | File | Size |
 |---|---:|
 | public/data/world.pack (gzip) | 1.09 MB (2.02 MB unpacked) |
-| public/data/scene.json | 35 kB (11 kB gzip) |
+| public/data/scene.json | 39 kB (12 kB gzip) |
 
 ## Preview
 
