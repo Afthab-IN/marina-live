@@ -4,7 +4,7 @@ import type { MeshData } from '../worker/build';
 export function geometry(d: MeshData): THREE.BufferGeometry {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(d.position, 3));
-  if (d.normal) g.setAttribute('normal', new THREE.BufferAttribute(d.normal, 3));
+  if (d.normal) g.setAttribute('normal', new THREE.BufferAttribute(d.normal, 3, d.normal instanceof Int8Array));
   if (d.color) g.setAttribute('color', new THREE.BufferAttribute(d.color, 3));
   if (d.uv) g.setAttribute('aFac', new THREE.BufferAttribute(d.uv, 2));
   if (d.info) g.setAttribute('aInfo', new THREE.BufferAttribute(d.info, 4));

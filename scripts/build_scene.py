@@ -86,6 +86,8 @@ def clip_path(pts, s, frame):
 
 # world unit vectors (x east, z south) for landmarks whose front is known; others face the nearest main road
 FLATTEN = {"chepauk_stadium", "nehru_stadium"}
+# everyday Tamil names where OSM carries the long official one
+TA_OVERRIDE = {"chennai_central": "சென்னை சென்ட்ரல்"}
 FRONT_OVERRIDE = {"chennai_central": [0.0, 1.0], "napier_bridge": [0.0, 0.0]}
 
 
@@ -231,7 +233,7 @@ def main():
             g = element_polygon(osm, spec["building"]) or g
         lm_geoms[key] = g
         c = g.centroid if g.geom_type != "Point" else g
-        rec = dict(key=key, title=spec["title"], name=r.get("name", ""), name_ta=r.get("name_ta", ""), osm=r["osm"],
+        rec = dict(key=key, title=spec["title"], name=r.get("name", ""), name_ta=TA_OVERRIDE.get(key, r.get("name_ta", "")), osm=r["osm"],
                    model=spec["model"], camera=spec["camera"], x=round(c.x, 1), z=round(c.y, 1),
                    ground=round(float(terrain.at(c.x, c.y)), 2))
         if g.geom_type in ("Polygon", "MultiPolygon"):

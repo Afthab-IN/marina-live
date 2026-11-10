@@ -6,7 +6,7 @@ import type { ArrayInfo, SceneMeta, Typed } from '../data/types';
 import { coastGrid, terrainGrid, type Grid } from '../world/sampler';
 
 export interface MeshData {
-  position: Float32Array; normal?: Float32Array; color?: Float32Array; uv?: Float32Array;
+  position: Float32Array; normal?: Float32Array | Int8Array; color?: Float32Array; uv?: Float32Array;
   info?: Uint8Array; height?: Float32Array; index: Uint32Array;
   bounds?: [number, number, number, number, number, number];
 }
@@ -192,11 +192,11 @@ function buildBuildings(a: Record<string, Typed>, meta: SceneMeta, chunk: number
     vCount.set(c, (vCount.get(c) ?? 0) + nv * 4 + nv);
     iCount.set(c, (iCount.get(c) ?? 0) + nv * 6 + (nv + 2 * holes - 2) * 3);
   }
-  type Acc = { pos: Float32Array; nor: Float32Array; uv: Float32Array; info: Uint8Array; h: Float32Array; idx: Uint32Array; v: number; i: number;
+  type Acc = { pos: Float32Array; nor: Int8Array; uv: Float32Array; info: Uint8Array; h: Float32Array; idx: Uint32Array; v: number; i: number;
     b: [number, number, number, number, number, number] };
   const acc = new Map<number, Acc>();
   for (const [c, nv] of vCount) {
-    acc.set(c, { pos: new Float32Array(nv * 3), nor: new Float32Array(nv * 3), uv: new Float32Array(nv * 2), info: new Uint8Array(nv * 4),
+    acc.set(c, { pos: new Float32Array(nv * 3), nor: new Int8Array(nv * 3), uv: new Float32Array(nv * 2), info: new Uint8Array(nv * 4),
       h: new Float32Array(nv), idx: new Uint32Array(iCount.get(c)!), v: 0, i: 0, b: [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity] });
   }
   let tris = 0;
@@ -209,7 +209,7 @@ function buildBuildings(a: Record<string, Typed>, meta: SceneMeta, chunk: number
     const put = (x: number, y: number, z: number, nx: number, ny: number, nz: number, u: number, vv: number, roof: number) => {
       const k = A.v++;
       A.pos[3 * k] = x; A.pos[3 * k + 1] = y; A.pos[3 * k + 2] = z;
-      A.nor[3 * k] = nx; A.nor[3 * k + 1] = ny; A.nor[3 * k + 2] = nz;
+      A.nor[3 * k] = Math.round(nx * 127); A.nor[3 * k + 1] = Math.round(ny * 127); A.nor[3 * k + 2] = Math.round(nz * 127);
       A.uv[2 * k] = u; A.uv[2 * k + 1] = vv;
       A.info[4 * k] = cls; A.info[4 * k + 1] = seed; A.info[4 * k + 2] = hs | (fs << 4); A.info[4 * k + 3] = roof;
       A.h[k] = h;
