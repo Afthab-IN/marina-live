@@ -51,10 +51,13 @@ button[aria-pressed=true] { background: var(--sand); color: #221d16; border-colo
 a { color: #f3d29c; }
 #hint { margin-top: 8px; }
 #credit { max-width: 360px; }
+.places { max-width: 560px; }
+.small-credit { display: none; margin-top: 9px; font-size: 10.5px; }
 
 .labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 1; }
 
 @media (max-width: 1279px) { #credit { max-width: 280px; } }
+@media (max-width: 1279px) { #credit { display: none; } .small-credit { display: block; } }
 @media (max-width: 720px) {
   .hud { gap: 6px; }
   .top { flex-direction: column; inset: max(8px, env(safe-area-inset-top)) 8px auto; align-items: flex-start; }
@@ -94,3 +97,25 @@ details[open] summary::after { content: " \2013"; }
   .row { grid-template-columns: 44px minmax(0, 1fr); gap: 8px; }
   .note { display: none; }
 }
+
+/* labels */
+.label { position: absolute; left: 0; top: 0; opacity: 0; transition: opacity .25s; text-align: center; white-space: nowrap;
+  font-size: 11px; font-weight: 600; letter-spacing: .03em; color: #fff; text-shadow: 0 1px 2px #000c, 0 0 6px #0009; }
+.label.on { opacity: .95; }
+.label span { display: block; }
+.label .ta { font-size: 10px; font-weight: 500; letter-spacing: 0; opacity: .9; }
+.label.road { text-transform: uppercase; font-size: 9.5px; letter-spacing: .12em; }
+.label.park { color: #e3f4cf; font-style: italic; }
+.label.water { color: #c9ecf7; font-style: italic; }
+.label.sea { font-size: 13px; letter-spacing: .2em; text-transform: uppercase; font-style: normal; }
+.label.sea.on { opacity: .8; }
+.label.place { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: #fff3df; }
+.label.station { font-size: 10px; color: #dfe9ff; }
+.label.station span:first-child::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 4px; border-radius: 1px; background: #7fa8e6; vertical-align: 1px; }
+.label.landmark { font-size: 12.5px; padding: 3px 9px; border-radius: 999px; background: #101c25c9; border: 1px solid var(--line); text-shadow: none; }
+@media (max-width: 720px) { .label { font-size: 10px; } .label.landmark { font-size: 11px; } }
+
+#legend { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; max-width: 330px; }
+.chip { font-size: 11px; padding: 2px 8px 2px 6px; border-radius: 999px; background: #ffffff12; border: 1px solid var(--line); white-space: nowrap; color: var(--ink); }
+.chip.quiet::before { display: none; }
+.chip::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--dot, #888); margin-right: 5px; }

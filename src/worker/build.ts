@@ -87,8 +87,14 @@ function buildTerrain(meta: SceneMeta, ter: Grid, coast: Grid): MeshData {
       b.vert(x, ter.at(x, z), z, c);
     }
   }
+  // skip cells well out at sea: the opaque sea covers them
+  const offshore = new Uint8Array(nx * nz);
+  for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) {
+    offshore[j * nx + i] = coast.at(Math.min(x1, x0 + i * step), Math.min(z1, z0 + j * step)) > 90 ? 1 : 0;
+  }
   for (let j = 0; j < nz - 1; j++) for (let i = 0; i < nx - 1; i++) {
     const a = j * nx + i, c = a + nx;
+    if (offshore[a] && offshore[a + 1] && offshore[c] && offshore[c + 1]) continue;
     b.idx.push(a, c, a + 1, a + 1, c, c + 1);
   }
   return b.out();

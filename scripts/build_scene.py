@@ -582,8 +582,12 @@ def make_labels(osm, roads, cover, land, frame, landmarks) -> dict:
     for nid, t in osm.node_tags.items():
         if t.get("railway") == "station" and t.get("station") != "subway" and t.get("name"):
             p = osm.node_xz(nid)
-            if p and frame.contains(Point(p)):
-                stations.append(dict(n=t.get("name:en", t["name"]), ta=t.get("name:ta", ""), x=round(p[0], 1), z=round(p[1], 1)))
+            name = STATION_EN.get(t["name"], t.get("name:en", t["name"]))
+            # Central already has a landmark label; "Chennai Park" is the suburban Park station
+            if not p or not frame.contains(Point(p)) or "Central" in name:
+                continue
+            ta = t.get("name:ta", t["name"] if t["name"] in STATION_EN else "")
+            stations.append(dict(n=name, ta=ta, x=round(p[0], 1), z=round(p[1], 1)))
     by_name = defaultdict(list)
     for r in roads:
         t = r["tags"]

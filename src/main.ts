@@ -6,6 +6,14 @@ import { Sun } from './scene/sun';
 import { buildingMaterial, decalMaterial, plinthMaterial, seaMaterial, shared, terrainMaterial } from './world/materials';
 import { mesh } from './world/meshes';
 import { buildLamps } from './world/lamps';
+import { buildTrees } from './world/trees';
+import { buildRail, trackPaths } from './world/rail';
+import { terrainGrid } from './world/sampler';
+import { buildTrains } from './sim/trains';
+import { buildTraffic } from './sim/traffic';
+import { buildLabels } from './ui/labels';
+import { Lens } from './post/lens';
+import { copy, type Counts } from './ui/copy';
 import { backdrop } from './sky/background';
 import { lightAt } from './sky/lighting';
 import { lightPanel, type TimeState } from './ui/lightPanel';
@@ -55,7 +63,16 @@ async function main() {
 
   const { scene: data, buffer } = await loadScene((f) => progress(f * 0.6));
   const c = data.meta.counts;
-  progress(0.62, `Raising ${c.buildings.toLocaleString()} buildings along the Marina…`);
+  const hs = c.heights, pct = (k: string) => Math.round((100 * (hs[k] ?? 0)) / c.buildings);
+  const counts: Counts = {
+    buildings: c.buildings,
+    heightsGooglePct: pct('google_open_buildings_2p5d_2023'),
+    heightsOsmPct: pct('osm_height') + pct('osm_levels_x_3.1m'),
+    heightsEstimatedPct: pct('estimated'),
+    treesMapped: c.trees_mapped, treesIllustrated: c.trees_illustrated,
+    lampsMapped: c.lamps_mapped, lampsIllustrated: c.lamps_illustrated,
+  };
+  progress(0.62, copy.raising(counts));
   const arrays: Record<string, Typed> = {};
   for (const k in data.packs.world.arrays) arrays[k] = view(buffer, data.packs.world.arrays[k]);
 
@@ -85,9 +102,16 @@ async function main() {
   const coastBox = new THREE.Vector4(ci.x0 - ci.step / 2, ci.z0 - ci.step / 2, ci.cols * ci.step, ci.rows * ci.step);
   const seaMat = seaMaterial(coastTex, coastBox, ci.scale);
   const [fx0, fz0, fx1, fz1] = data.meta.frame_m;
-  const seaGeo = new THREE.PlaneGeometry(fx1 - fx0, fz1 - fz0, Math.ceil((fx1 - fx0) / 20), Math.ceil((fz1 - fz0) / 20));
+  // the sea plane only needs to start just west of the westernmost shore
+  const sdf = arrays.coast_sdf as Uint8Array;
+  let seaX0 = fx1;
+  for (let r = 0; r < ci.rows; r++) for (let cc = 0; cc < ci.cols; cc++) {
+    if (sdf[r * ci.cols + cc] > 120) { seaX0 = Math.min(seaX0, ci.x0 + cc * ci.step); break; }
+  }
+  seaX0 = Math.max(fx0, seaX0 - 60);
+  const seaGeo = new THREE.PlaneGeometry(fx1 - seaX0, fz1 - fz0, Math.ceil((fx1 - seaX0) / 24), Math.ceil((fz1 - fz0) / 24));
   seaGeo.rotateX(-Math.PI / 2);
-  seaGeo.translate((fx0 + fx1) / 2, 0, (fz0 + fz1) / 2);
+  seaGeo.translate((seaX0 + fx1) / 2, 0, (fz0 + fz1) / 2);
   const sea = new THREE.Mesh(seaGeo, seaMat);
   sea.name = 'sea';
   sea.renderOrder = 1;
@@ -99,6 +123,45 @@ async function main() {
   scene.add(moon);
   const lamps = buildLamps(arrays, data.meta.quant);
   world.add(lamps.group);
+  const ter = terrainGrid(data.meta.terrain, arrays.terrain_h);
+  const trees = buildTrees(arrays, data.meta.quant, { lite });
+  world.add(trees.group);
+  const paths = trackPaths(data, arrays, ter);
+  const rail = buildRail(data, arrays, ter, paths);
+  world.add(rail.group);
+  const trains = buildTrains(paths, shared.uNight);
+  world.add(trains.group);
+  const traffic = buildTraffic(arrays, data.meta.quant, ter, { lite });
+  world.add(traffic.group);
+  const labels = buildLabels($('#labels'), data, ter);
+
+  // layer toggles
+  $('#layers').hidden = false;
+  const legend = document.createElement('p');
+  legend.id = 'legend';
+  legend.hidden = true;
+  const L = copy.sourcesLegend;
+  legend.innerHTML = [['#b32929', L.osmHeight], ['#dc6b38', L.osmLevels], ['#3d75bd', L.google], ['#a8a196', L.estimated],
+    ['#f2d14b', L.treeMapped], ['#9aa39a', L.treeIllustrated]].map(([dot, t]) => `<span class="chip" style="--dot:${dot}">${t}</span>`).join('')
+    + `<span class="chip quiet">${L.illustrated}</span>`;
+  $('[data-toggle=traffic]').title = copy.trafficNote;
+  legend.title = copy.sourcesTitle;
+  $('#credit p').innerHTML = copy.credits(counts);
+  const small = document.createElement('p');
+  small.className = 'small-credit';
+  small.innerHTML = copy.creditsShort();
+  $('#views').append(legend);
+  const toggles: Record<string, (on: boolean) => void> = {
+    labels: (on) => labels.setVisible(on),
+    traffic: (on) => traffic.setEnabled(on),
+    sources: (on) => { shared.uSources.value = on ? 1 : 0; trees.setSources(on); legend.hidden = !on; },
+    lens: (on) => { lens.enabled = on; },
+  };
+  document.querySelectorAll<HTMLButtonElement>('[data-toggle]').forEach((b) => b.addEventListener('click', () => {
+    const on = b.getAttribute('aria-pressed') !== 'true';
+    b.setAttribute('aria-pressed', String(on));
+    toggles[b.dataset.toggle!](on);
+  }));
 
   // time of day and season: Chennai, IST; URL ?t=hour&m=month
   const now = new Date(Date.now() + (5.5 * 60 + new Date().getTimezoneOffset()) * 60000);
@@ -131,13 +194,16 @@ async function main() {
     panel.show(light);
   };
   const panel = lightPanel($('#light'), time, applyTime);
+  $('#more').append(small);
 
   const rig = new CameraRig(renderer.domElement, data.meta.frame_m);
   const whole: View = { x: (fx0 + fx1) / 2, z: (fz0 + fz1) / 2, span: (fz1 - fz0) * 0.62, azimuth: 1.2 };
+  const lens = new Lens(lite ? 0 : 4);
   const resize = () => {
     const w = stage.clientWidth, h = stage.clientHeight;
     renderer.setSize(w, h, false);
     rig.resize(w, h);
+    lens.setSize(w, h, renderer.getPixelRatio());
   };
   new ResizeObserver(resize).observe(stage);
   resize();
@@ -196,7 +262,7 @@ async function main() {
     return pts;
   };
 
-  let frames = 0, last = performance.now(), fpsT = last, fpsN = 0;
+  let frames = 0, last = performance.now(), fpsT = last, fpsN = 0, slow = 0;
   const loop = (now: number) => {
     const dt = Math.min(0.1, (now - last) / 1000);
     last = now;
@@ -204,13 +270,28 @@ async function main() {
     rig.update(dt);
     landmarks?.update(shared.uTime.value, shared.uNight.value);
     lamps.update(shared.uNight.value, rig.metresPerPixel());
+    trees.update(rig.metresPerPixel());
+    trains.update(shared.uTime.value);
+    traffic.update(dt, shared.uNight.value);
     rig.cam.getWorldDirection(seaMat.uniforms.uViewDir.value).negate();
     if (renderer.shadowMap.autoUpdate) sun.fit(shadowPoints());
-    renderer.render(scene, rig.cam);
+    lens.render(renderer, scene, rig.cam);
+    labels.update(rig.cam, stage.clientWidth, stage.clientHeight, rig.metresPerPixel());
     fpsN++;
-    if (now - fpsT > 2000) { (window as any).__fps = (fpsN * 1000) / (now - fpsT); fpsT = now; fpsN = 0; }
+    if (now - fpsT > 2000) {
+      const fps = (fpsN * 1000) / (now - fpsT);
+      (window as any).__fps = fps;
+      fpsT = now; fpsN = 0;
+      // adaptive resolution: two slow readings in a row drop the pixel ratio by half a step
+      slow = fps < 28 && !document.hidden ? slow + 1 : 0;
+      if (slow >= 2 && renderer.getPixelRatio() > 1) {
+        slow = 0;
+        renderer.setPixelRatio(Math.max(1, renderer.getPixelRatio() - 0.5));
+        resize();
+      }
+    }
     if (++frames === 3) {
-      statusEl.textContent = `${c.buildings.toLocaleString()} buildings · ${c.road_km} km of roads · ${c.rail_km} km of track`;
+      statusEl.textContent = copy.status(counts);
       document.body.classList.add('ready');
       (window as any).__ready = true;
       console.info(`built in ${Math.round(performance.now() - t0)} ms`, JSON.stringify(built.stats));
@@ -219,7 +300,7 @@ async function main() {
   applyTime();
   renderer.setAnimationLoop(loop);
 
-  (window as any).__app = { renderer, scene, rig, sun, data, arrays, built: built.stats, lite, time, applyTime, lamps, get light() { return light; } };
+  (window as any).__app = { renderer, scene, rig, sun, data, arrays, built: built.stats, lite, time, applyTime, lamps, trees, rail, trains, traffic, labels, get light() { return light; } };
 }
 
 main().catch((err: Error) => {
