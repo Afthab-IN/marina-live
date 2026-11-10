@@ -30,6 +30,7 @@ const loadingText = $('#loading-text');
 const bar = $('#loading-bar');
 
 function progress(f: number, text?: string) {
+  bar.parentElement?.classList.remove('wait');
   bar.style.width = `${Math.round(4 + f * 96)}%`;
   if (text) loadingText.textContent = text;
 }
