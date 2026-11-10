@@ -11,7 +11,7 @@ import type { Kit, LandmarkBuild } from '../kit';
 import { Parts, archShape, rng, type V2 } from './_towers';
 import {
   type Plan, band, clean, clock, dome, edgesOf, finish, gridAngle, openings, parapet, pilasters, planEdges, rect,
-  roof, rotPts, shaft, triStats, walls,
+  roof, rotPts, shaft, walls,
 } from './_heritage';
 
 export function build(lm: Landmark, kit: Kit): LandmarkBuild {
@@ -173,10 +173,9 @@ export function build(lm: Landmark, kit: Kit): LandmarkBuild {
   }
 
   finish(P, group, th);
-  const dbg = triStats(group);
   return {
     group,
-    notes: dbg + ' Footprint and both courtyards from OSM (relation 60184); 3 storeys and the 43 m tower as published, with a '
+    notes: 'Footprint and both courtyards from OSM (relation 60184); 3 storeys and the 43 m tower as published, with a '
       + '2.5 m clock on each face. The tower and porch sit on the porch side of the footprint (local -z), which is not the '
       + 'side the front vector points to. Bay rhythm, pavilion heights, the belvedere and dome are illustrated.',
   };

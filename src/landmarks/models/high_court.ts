@@ -17,7 +17,7 @@ import type { Kit, LandmarkBuild } from '../kit';
 import { Parts, archShape, rng, type V2 } from './_towers';
 import {
   type Plan, attic, band, chhatri, clean, corners, dome, finial, finish, gridAngle, inPlan, minaret, openings,
-  parapet, planEdges, roof, rotPt, rotPts, shaft, triStats, walls,
+  parapet, planEdges, roof, rotPt, rotPts, shaft, walls,
 } from './_heritage';
 
 const LANTERN: V2 = [1043.2, -2837.2];   // OSM way 1188619719, the 1894 light (world x, z)
@@ -75,12 +75,10 @@ export function build(lm: Landmark, kit: Kit): LandmarkBuild {
 
   // minarets on the convex corners of the ranges (rising from the ground, engaged in the corner)
   const near = (x: number, z: number, cx: number, cz: number, r: number) => Math.hypot(x - cx, z - cz) < r;
-  let nMin = 0;
   for (const c of corners(plan.outer, 6)) {
     const x = c.p[0] - c.d[0] * 0.55, z = c.p[1] - c.d[1] * 0.55;
     if (near(x, z, ex, ez, 9) || near(x, z, tx, tz, 9)) continue;
     minaret(P, x, z, { r: 1.25, y0: 0, y1: H + 3.4, sides: 8, body: 'red', bands: [H - 0.6], dome: 'roofRed', domeH: 2.7, kind: 'bulb', tip: 'gold' });
-    nMin++;
   }
 
   // eastern block: octagonal drum with arched lights and a bulbous dome, four chhatris on the diagonals
@@ -148,10 +146,9 @@ export function build(lm: Landmark, kit: Kit): LandmarkBuild {
   }
 
   finish(P, group, th);
-  const dbg = `[${nMin} minarets] ` + triStats(group);
   return {
     group,
-    notes: dbg + ' Block-A footprint from OSM (way 369960494). The 1894 lighthouse tower stands where OSM maps its "Lantern Room" '
+    notes: 'Block-A footprint from OSM (way 369960494). The 1894 lighthouse tower stands where OSM maps its "Lantern Room" '
       + '(way 1188619719) and tops out about 48 m above ground (light about 175 ft above sea level as published). The "Old '
       + 'Lighthouse" way 1188619718 is the free-standing 1844 Doric column outside Block-A and is not modelled here. Bay '
       + 'rhythm, the raised courtroom roofs, the eastern drum dome, minaret count and the red with white trim scheme are illustrated.',

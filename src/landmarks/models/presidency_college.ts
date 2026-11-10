@@ -12,7 +12,7 @@ import type { Kit, LandmarkBuild } from '../kit';
 import { Parts, archShape, rng, type V2 } from './_towers';
 import {
   type Edge, type Plan, attic, band, clean, dome, edgesOf, finial, finish, gridAngle, inPlan, openings, parapet,
-  pilasters, rect, roof, rotPt, rotPts, shaft, triStats, walls,
+  pilasters, rect, roof, rotPt, rotPts, shaft, walls,
 } from './_heritage';
 
 const DOME: V2 = [286.0, 352.5]; // centre of the 1890 dome (world x, z); Google 2.5D has its high point here
@@ -140,10 +140,9 @@ export function build(lm: Landmark, kit: Kit): LandmarkBuild {
   }
 
   finish(P, group, th);
-  const dbg = triStats(group);
   return {
     group,
-    notes: dbg + ' Main block footprint from OSM (relation 14377740, building way 31900265). The dome stands where Google 2.5D '
+    notes: 'Main block footprint from OSM (relation 14377740, building way 31900265). The dome stands where Google 2.5D '
       + 'heights peak, over the central pavilion; two storeys, the taller eastern wing and the black gneiss columns follow '
       + 'published descriptions. Tower bay caps, the gable, dome ribs and the pink (terracotta) dome colour are illustrated.',
   };

@@ -11,8 +11,8 @@ import type { Landmark } from '../../data/types';
 import type { Kit, LandmarkBuild, MatName } from '../kit';
 import { Parts, archShape, flat, rng } from './_towers';
 import {
-  type Plan, attic, band, domeProf, edgesOf, finial, finish, gridAngle, openings, parapet, rect, roof, rotPts, shaft,
-  triStats, walls,
+  type Plan, band, domeProf, edgesOf, finial, finish, gridAngle, openings, parapet, rect, roof, rotPts, shaft,
+  walls,
 } from './_heritage';
 
 export function build(lm: Landmark, kit: Kit): LandmarkBuild {
@@ -111,7 +111,7 @@ export function build(lm: Landmark, kit: Kit): LandmarkBuild {
     }
     P.box('white', tx - TA - 0.45, top - 0.6, tzc - TA - 0.45, tx + TA + 0.45, top + 0.2, tzc + TA + 0.45);
     const tp: Plan = { outer: rect(tx - TA, tzc - TA, tx + TA, tzc + TA), holes: [] };
-    openings(P, rand, edgesOf(tp.outer), { y: H + 0.8, h: 2.4, w: 1.2, bay: 3.0, point: 1, seg: 3, lit: 0.4, margin: 0.8, skip: (p) => Math.abs(p[1] - tzc) < TA - 0.5 && Math.abs(p[0] - tx) < 1 && false });
+    openings(P, rand, edgesOf(tp.outer), { y: H + 0.8, h: 2.4, w: 1.2, bay: 3.0, point: 1, seg: 3, lit: 0.4, margin: 0.8 });
     openings(P, rand, edgesOf(tp.outer), { y: 25.4, h: 2.6, w: 1.2, bay: 2.6, point: 1, seg: 3, lit: 0.4, margin: 0.6, frame: 'white', fw: 0.2 });
     // corner pinnacles
     for (const [sx, sz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]] as const) {
@@ -154,16 +154,10 @@ export function build(lm: Landmark, kit: Kit): LandmarkBuild {
       P.add('gold', new THREE.ConeGeometry(0.1, 0.7, 4, 1, true).translate(x, y + 3.75, z));
     }
   }
-  // small domed kiosks on the hall roof corners
-  for (const [sx, sz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]] as const) {
-    attic(P, rand, (sx > 0 ? hx1 : hx0) - 1.0, zc + sz * hz - 1.0, (sx > 0 ? hx1 : hx0) + 1.0, zc + sz * hz + 1.0, HH, HH + 1.6, { wall: 'white', roof: 'red', trim: 'white', lit: 0 });
-  }
-
   finish(P, group, th);
-  const dbg = triStats(group);
   return {
     group,
-    notes: dbg + ' Footprint from OSM (way 23894473). Four domed towers, side cupolas on octagonal drums and the red brick '
+    notes: 'Footprint from OSM (way 23894473). Four domed towers, side cupolas on octagonal drums and the red brick '
       + 'with white dressings follow published descriptions; tower positions and wing heights follow Google 2.5D heights. '
       + 'Tower and dome heights, the hipped hall roof and the striped domes are illustrated.',
   };

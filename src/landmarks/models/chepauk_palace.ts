@@ -12,7 +12,7 @@ import type { Kit, LandmarkBuild, MatName } from '../kit';
 import { Parts, archShape, rng, type V2 } from './_towers';
 import {
   type Plan, attic, band, chhatri, clean, corners, dome, edgesOf, finial, finish, gridAngle, inside, minaret, openings,
-  parapet, rect, roof, rotPt, rotPts, triStats, walls,
+  parapet, rect, roof, rotPt, rotPts, walls,
 } from './_heritage';
 
 const TOWER: V2 = [294.1, -185.5]; // centre of the linking tower base (world x, z)
@@ -159,10 +159,9 @@ export function build(lm: Landmark, kit: Kit): LandmarkBuild {
   }
 
   finish(P, group, th);
-  const dbg = triStats(group);
   return {
     group,
-    notes: dbg + ' Both blocks from OSM (relation 14377429, ways 31897161 and 31897159). The tower stands on the square '
+    notes: 'Both blocks from OSM (relation 14377429, ways 31897161 and 31897159). The tower stands on the square '
       + 'projection of the Kalas Mahal ring (about 75 ft to the dome). Storey heights, wing heights, minaret and dome '
       + 'placement, the raised Durbar Hall roof and the terracotta with cream trim scheme are illustrated.',
   };
