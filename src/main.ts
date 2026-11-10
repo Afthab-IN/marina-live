@@ -8,7 +8,8 @@ import { mesh } from './world/meshes';
 import { buildLamps } from './world/lamps';
 import { buildTrees } from './world/trees';
 import { buildRail, trackPaths } from './world/rail';
-import { terrainGrid } from './world/sampler';
+import { coastGrid, terrainGrid } from './world/sampler';
+import { buildBeach, buildTanks } from './world/props';
 import { buildTrains } from './sim/trains';
 import { buildTraffic } from './sim/traffic';
 import { buildLabels } from './ui/labels';
@@ -126,6 +127,10 @@ async function main() {
   const ter = terrainGrid(data.meta.terrain, arrays.terrain_h);
   const trees = buildTrees(arrays, data.meta.quant, { lite });
   world.add(trees.group);
+  const tanks = buildTanks(built.tanks);
+  world.add(tanks.mesh);
+  const beach = buildBeach(data, ter, coastGrid(data.meta.coast, arrays.coast_sdf));
+  world.add(beach.group);
   const paths = trackPaths(data, arrays, ter);
   const rail = buildRail(data, arrays, ter, paths);
   world.add(rail.group);
@@ -298,6 +303,8 @@ async function main() {
     landmarks?.update(shared.uTime.value, shared.uNight.value);
     lamps.update(shared.uNight.value, rig.metresPerPixel());
     trees.update(rig.metresPerPixel());
+    tanks.update(rig.metresPerPixel());
+    beach.update(shared.uNight.value, rig.metresPerPixel());
     trains.update(shared.uTime.value);
     traffic.update(dt, shared.uNight.value);
     rig.cam.getWorldDirection(seaMat.uniforms.uViewDir.value).negate();
@@ -328,7 +335,7 @@ async function main() {
   applyTime();
   renderer.setAnimationLoop(loop);
 
-  (window as any).__app = { renderer, scene, rig, sun, data, arrays, built: built.stats, lite, time, applyTime, lamps, trees, rail, trains, traffic, labels, get light() { return light; } };
+  (window as any).__app = { renderer, scene, rig, sun, data, arrays, built: built.stats, lite, time, applyTime, lamps, trees, rail, trains, traffic, labels, tanks, beach, get light() { return light; } };
 }
 
 main().catch((err: Error) => {

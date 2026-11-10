@@ -13,6 +13,8 @@ export interface MeshData {
 export interface BuildRequest { buffer: ArrayBuffer; arrays: Record<string, ArrayInfo>; meta: SceneMeta; chunk: number }
 export interface BuildResult {
   terrain: MeshData; cover: MeshData; roads: MeshData; marks: MeshData; plinth: MeshData; buildings: MeshData[];
+  /** rooftop water tanks: x, y, z, radius per tank (illustrated) */
+  tanks: Float32Array;
   stats: { buildings: number; buildingVerts: number; buildingTris: number; ms: number };
 }
 
@@ -198,6 +200,7 @@ function buildBuildings(a: Record<string, Typed>, meta: SceneMeta, chunk: number
       h: new Float32Array(nv), idx: new Uint32Array(iCount.get(c)!), v: 0, i: 0, b: [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity] });
   }
   let tris = 0;
+  const tanks: number[] = [];
   for (let i = 0; i < n; i++) {
     const A = acc.get(chunkOf[i])!;
     const h = H[i] / 10, minh = MH[i] / 10, base = B[i] / 100;
@@ -238,6 +241,26 @@ function buildBuildings(a: Record<string, Typed>, meta: SceneMeta, chunk: number
     }
     const roofBase = A.v;
     for (let k = 0; k < flat.length; k += 2) put(flat[k], y1, flat[k + 1], 0, 1, 0, flat[k], flat[k + 1], 1);
+    // illustrated black rooftop water tanks on homes and flats (a Chennai signature)
+    if ((cls <= 2 || cls === 3) && h < 32 && minh === 0) {
+      const ext = holes.length ? holes[0] * 2 : flat.length;
+      let area = 0, cx = 0, cz = 0;
+      for (let k = 0; k < ext; k += 2) {
+        const j = (k + 2) % ext;
+        const cr = flat[k] * flat[j + 1] - flat[j] * flat[k + 1];
+        area += cr; cx += (flat[k] + flat[j]) * cr; cz += (flat[k + 1] + flat[j + 1]) * cr;
+      }
+      area /= 2;
+      const r01 = ((seed * 2654435761) >>> 0) / 4294967296;
+      if (Math.abs(area) > 35 && Math.abs(area) < 1200 && r01 < 0.62) {
+        cx /= 6 * area; cz /= 6 * area;
+        if (inside(flat, ext, cx, cz)) {
+          const rad = Math.abs(area) > 300 ? 1.1 : 0.8;
+          tanks.push(cx + (r01 - 0.3) * 2, y1, cz + (0.5 - r01) * 2, rad);
+          if (Math.abs(area) > 260 && r01 < 0.3) tanks.push(cx - 2.6, y1, cz + 1.2, rad);
+        }
+      }
+    }
     const tri = earcut(flat, holes, 2);
     for (let k = 0; k < tri.length; k += 3) {
       const p0 = tri[k], p1 = tri[k + 1], p2 = tri[k + 2];
@@ -255,7 +278,17 @@ function buildBuildings(a: Record<string, Typed>, meta: SceneMeta, chunk: number
     out.push({ position: A.pos.subarray(0, A.v * 3), normal: A.nor.subarray(0, A.v * 3), uv: A.uv.subarray(0, A.v * 2),
       info: A.info.subarray(0, A.v * 4), height: A.h.subarray(0, A.v), index: A.idx.slice(0, A.i), bounds: A.b });
   }
-  return { meshes: out, verts, tris, n };
+  return { meshes: out, verts, tris, n, tanks: new Float32Array(tanks) };
+}
+
+/** Point in polygon (first `len` numbers of a flat x, z ring). */
+function inside(flat: number[], len: number, x: number, z: number) {
+  let c = false;
+  for (let i = 0, j = len - 2; i < len; j = i, i += 2) {
+    const xi = flat[i], zi = flat[i + 1], xj = flat[j], zj = flat[j + 1];
+    if ((zi > z) !== (zj > z) && x < ((xj - xi) * (z - zi)) / (zj - zi) + xi) c = !c;
+  }
+  return c;
 }
 
 self.onmessage = (ev: MessageEvent<BuildRequest>) => {
@@ -284,11 +317,12 @@ self.onmessage = (ev: MessageEvent<BuildRequest>) => {
   const plinth = buildPlinth(meta, ter, coast);
   const bl = buildBuildings(a, meta, chunk);
   const result: BuildResult = {
-    terrain, cover: cover.out(), roads: roads.out(), marks, plinth, buildings: bl.meshes,
+    terrain, cover: cover.out(), roads: roads.out(), marks, plinth, buildings: bl.meshes, tanks: bl.tanks,
     stats: { buildings: bl.n, buildingVerts: bl.verts, buildingTris: bl.tris, ms: Math.round(performance.now() - t0) },
   };
   const transfer: ArrayBuffer[] = [];
   const add = (m: MeshData) => { for (const v of Object.values(m)) if (ArrayBuffer.isView(v)) transfer.push((v as Typed).buffer as ArrayBuffer); };
   [result.terrain, result.cover, result.roads, result.marks, result.plinth, ...result.buildings].forEach(add);
+  transfer.push(result.tanks.buffer as ArrayBuffer);
   (self as unknown as Worker).postMessage(result, [...new Set(transfer)]);
 };

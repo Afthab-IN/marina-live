@@ -24,7 +24,7 @@ export const copy = {
     `${OSM} · Overture Maps (Google Open Buildings, Microsoft) · Google Open Buildings 2.5D heights · Mapzen terrain · three.js. `
     + `Mapped: footprints, roads, rail, coastline, water, parks, ${n(c.treesMapped)} trees and ${n(c.lampsMapped)} street lamps. `
     + `Heights: ${c.heightsGooglePct}% Google 2.5D, ${c.heightsOsmPct}% OSM, ${c.heightsEstimatedPct}% estimated. `
-    + `Illustrated: landmark models, facades, traffic, trains, waves, ${n(c.treesIllustrated)} extra trees and ${n(c.lampsIllustrated)} extra lamps.`,
+    + `Illustrated: landmark models, facades, rooftop tanks, beach stalls and boats, traffic, trains, waves, ${n(c.treesIllustrated)} extra trees and ${n(c.lampsIllustrated)} extra lamps.`,
   /** compact credits shown inside the light panel on narrow screens */
   creditsShort: () =>
     `${OSM} · Overture Maps · Google Open Buildings 2.5D heights · Mapzen terrain · three.js. Trees, lamps and traffic beyond the mapped ones are illustrated.`,
