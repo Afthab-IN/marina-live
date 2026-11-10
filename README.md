@@ -33,6 +33,40 @@ The build uses relative paths, so dist/ works at the root of a domain or under a
 
 Add `?q=lite` to the URL to force the lighter phone settings, or `?q=high` to force full quality.
 
+## What's in the model
+
+- Isometric and Orbit views.
+  - Isometric: drag to move, right-drag to turn, scroll to zoom.
+  - Orbit: drag to orbit, right-drag to move, scroll to zoom.
+  - Q and E turn 90 degrees. N switches between day and night. H hides the panels.
+- Camera buttons: Whole corridor, Chepauk Stadium, Lighthouse, LIC Building, Chennai Central, Nehru Stadium, Marina Beach, Fort St George.
+- Time slider: Morning, Afternoon, Golden hour (set from each month's real sunset) and Night.
+- Month slider: moves the sun path for Chennai (13.06 N).
+- Shadows follow the sun. At night, windows, street lamps, stadium floodlights and the lighthouse beam light up.
+- Toggles:
+  - Labels: English, with the Tamil name from OSM.
+  - Traffic: illustrated vehicles and trains.
+  - Miniature lens: tilt-shift.
+  - Sources: colours buildings by where their height came from, and marks trees and street lamps as mapped or illustrated.
+- URL parameters:
+  - `t` hour, for example `?t=18.5`.
+  - `m` month, from 0 to 11.99.
+  - `q=lite` or `q=high` for quality.
+  - `dpr` to force a pixel ratio.
+
+## Landmark models
+
+- Each hand-modelled landmark is one file in `src/landmarks/models/<key>.ts`, exporting `build(lm, kit)`. The shared kit is `src/landmarks/kit.ts`.
+- Models load after the base map, each as its own small chunk.
+- Dev gallery: with `npm run dev` running, open `/landmarks.html?key=lighthouse`. Other parameters: `az`, `view=iso|side|top`, `night=1`, `zoom`.
+- Headless snapshot: `node scripts/snap.mjs lighthouse --az=35 --night` writes a PNG to `reports/_tmp/`.
+- Landmark footprints come from OSM. Chennai Central's heritage building is not mapped there, so its 190 x 28 m footprint is illustrated.
+
+## Deploying
+
+- GitHub Pages: `.github/workflows/pages.yml` builds and publishes `dist/` on every push to `main`.
+- Vercel: `vercel.json` is ready (Vite, `dist/`, cache headers). The Vercel team used for this project is blocked until 5 Dec 2026, so Pages is the live host until then.
+
 ## Regenerating the data
 
 1. Set up the environment. This installs numpy, shapely, duckdb, rasterio and pillow (about 190 MB).
