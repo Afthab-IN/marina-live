@@ -101,6 +101,9 @@ ${FACADE}`)
     col *= mix(1.0, 0.80, ground);
     col *= mix(1.0, 1.05, top);
     vec3 glass = lin(vec3(0.33, 0.39, 0.44)) * (0.75 + 0.5 * mhash2(floor(cell)));
+    // the concrete sunshade (chajja) over each window throws a thin shadow band
+    float chajja = step(0.81, f.y) * step(f.y, 0.87) * step(0.18, f.x) * step(f.x, 0.82) * (1.0 - top) * tall * step(1.0, cell.y);
+    col *= mix(1.0, 0.7, chajja * detail);
     col = mix(col, glass, clamp(win + shop * 0.9, 0.0, 1.0) * 0.9 * detail);
     col = mix(col, col * 0.84, (1.0 - detail) * tall);
     // night: a share of windows lit, warm in homes and cooler in offices; shops glow at street level
@@ -124,7 +127,7 @@ ${FACADE}`)
   diffuseColor.rgb = col;
 }`);
   };
-  m.customProgramCacheKey = () => 'building-v3';
+  m.customProgramCacheKey = () => 'building-v4';
   return m;
 }
 
